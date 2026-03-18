@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seiji Fujimoto — Scientist Spotlight</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#020109;--deep:#07051a;
+  --ink:#191714;--ink-mid:#3d3830;--ink-light:#6b6156;
+  --gold:#c8a84b;--gold-dim:#7d6a2e;
+  --cyan:#4dd9e8;--red:#e05c4b;
+  --paper:#faf8f4;--rule:#e2ddd5;
+  --folder:#c99040;--folder-dark:#8a5e10;--folder-paper:#fdf5e0;
+}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:#f0eeff;font-family:'Cormorant Garamond',serif;overflow-x:hidden;cursor:none}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:10px;height:10px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen}
+#cur-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(200,168,75,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .15s ease-out,top .15s ease-out}
+#paper{cursor:auto}
+#paper ~ * #cur,#paper ~ * #cur-ring{display:none}
+
+/* ── LOADER ── */
+#loader{
+  position:fixed;inset:0;background:var(--void);z-index:8000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+  transition:opacity 1.4s ease,visibility 1.4s;
+}
+#loader.gone{opacity:0;visibility:hidden}
+#ldr-canvas{position:absolute;inset:0;pointer-events:none}
+.ldr-text-wrap{position:relative;z-index:1;text-align:center}
+.ldr-title{font-family:'Cinzel',serif;font-size:22px;letter-spacing:8px;color:rgba(200,168,75,.9);margin-bottom:10px}
+.ldr-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:rgba(200,168,75,.4);animation:pulse 2s infinite}
+.ldr-bar{width:140px;height:1px;background:rgba(200,168,75,.15);margin:16px auto 0;overflow:hidden}
+.ldr-fill{height:100%;background:var(--gold);width:0;animation:fillBar 3.2s ease forwards}
+@keyframes fillBar{to{width:100%}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ── STARS ── */
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ── HERO ── */
+#hero{position:relative;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pl{position:absolute;inset:0;will-change:transform}
+.pl-neb{background:radial-gradient(ellipse 60% 40% at 70% 50%,rgba(26,8,60,.75) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 20% 60%,rgba(5,25,50,.5) 0%,transparent 60%)}
+.pl-glow{background:radial-gradient(ellipse 28% 28% at 55% 46%,rgba(77,217,232,.07) 0%,transparent 60%)}
+.hero-cnt{position:relative;z-index:5;text-align:center;padding:40px;will-change:transform}
+.h-eye{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--cyan);opacity:0;animation:riseIn .8s 3.8s forwards;margin-bottom:28px}
+.h-name{font-family:'Cinzel',serif;font-size:clamp(54px,9vw,118px);font-weight:700;letter-spacing:5px;line-height:.9;color:#f0eeff;opacity:0;animation:riseIn 1s 4s forwards;text-shadow:0 0 80px rgba(200,168,75,.2)}
+.h-name em{display:block;font-style:normal;font-size:.38em;letter-spacing:14px;color:var(--gold);font-weight:600;margin-top:14px}
+.h-role{font-style:italic;font-size:clamp(15px,1.8vw,20px);color:rgba(240,238,255,.45);margin-top:32px;opacity:0;animation:riseIn .8s 4.5s forwards}
+.h-byline{margin-top:14px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:4px;color:rgba(200,168,75,.55);opacity:0;animation:riseIn .8s 4.9s forwards;text-transform:uppercase}
+.h-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:4px;color:var(--gold-dim);opacity:0;animation:riseIn .6s 5.4s forwards;display:flex;flex-direction:column;align-items:center;gap:8px}
+.h-scroll::after{content:'';width:1px;height:36px;background:linear-gradient(to bottom,var(--gold-dim),transparent)}
+@keyframes riseIn{to{opacity:1;transform:translateY(0)}}
+.h-eye,.h-name,.h-role,.h-byline{transform:translateY(20px)}
+
+/* ── SECTION BASE ── */
+.ex-sec{padding:100px 40px;max-width:1100px;margin:0 auto}
+.sec-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:16px;margin-bottom:70px}
+.sec-lbl::before{content:'';flex:0 0 36px;height:1px;background:var(--gold)}
+.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--gold-dim),transparent)}
+
+/* ── BIO ── */
+.bio-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(200,168,75,.5);border:1px solid rgba(200,168,75,.2);padding:6px 14px;border-radius:1px;margin-bottom:52px}
+.bio-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:80px;align-items:start;margin-bottom:80px}
+.bio-text p{font-size:17px;line-height:2;color:rgba(240,238,255,.68);font-weight:300;margin-bottom:22px}
+.bio-text p strong{color:#f0eeff;font-weight:600}
+.bio-stats{border-left:1px solid rgba(200,168,75,.2);padding-left:40px;display:flex;flex-direction:column;gap:40px}
+.stat-n{font-family:'Cinzel',serif;font-size:52px;color:var(--gold);line-height:1}
+.stat-l{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(240,238,255,.35);text-transform:uppercase;margin-top:4px}
+
+/* ── FOLDERS ── */
+.folders-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:6px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:28px}
+#folders{display:flex;align-items:flex-end;gap:5px;height:380px}
+.fld{flex:1;display:flex;flex-direction:column;cursor:pointer;position:relative;transition:flex .4s cubic-bezier(.22,1,.36,1);min-width:0}
+.fld.open{flex:2.4}
+.fld-tab{background:var(--folder-dark);padding:8px 14px;border-radius:5px 5px 0 0;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(0,0,0,.45);white-space:nowrap;transition:background .3s;z-index:2}
+.fld.open .fld-tab{background:var(--folder);color:rgba(0,0,0,.75)}
+.fld-body{background:var(--folder);border-radius:0 4px 4px 4px;width:100%;height:28px;overflow:hidden;transition:height .45s cubic-bezier(.22,1,.36,1)}
+.fld.open .fld-body{height:340px}
+.fld-inner{margin:10px 10px 18px;background:var(--folder-paper);border-radius:2px;padding:24px 22px 28px;height:calc(100% - 28px);opacity:0;transition:opacity .3s .15s;overflow:hidden}
+.fld.open .fld-inner{opacity:1}
+.fld-year{font-family:'Cinzel',serif;font-size:22px;color:var(--folder-dark);margin-bottom:8px;font-weight:600}
+.fld-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px;line-height:1.3}
+.fld-desc{font-family:'Cormorant Garamond',serif;font-size:13.5px;color:var(--ink-mid);line-height:1.75;font-weight:300}
+.fld-lines{position:absolute;bottom:0;left:0;right:0;height:60px;pointer-events:none;background:repeating-linear-gradient(transparent,transparent 17px,rgba(140,110,50,.18) 17px,rgba(140,110,50,.18) 18px)}
+
+/* ── RESEARCH ── */
+.rsh-h{margin-bottom:70px}
+.rsh-h h2{font-family:'Cinzel',serif;font-size:clamp(24px,3.5vw,40px);font-weight:400;letter-spacing:3px;color:#f0eeff;line-height:1.25;margin-bottom:18px}
+.rsh-h .sub{font-style:italic;color:rgba(240,238,255,.4);font-size:16px}
+
+/* ── KEY FINDING ── */
+.kf{border:1px solid rgba(77,217,232,.22);padding:52px;position:relative;background:rgba(77,217,232,.02);margin-bottom:56px;border-radius:2px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.kf::before{content:'KEY FINDING';position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:4px;color:var(--cyan);background:var(--void);padding:0 10px;white-space:nowrap}
+.kf h3{font-style:italic;font-size:clamp(20px,2.5vw,30px);line-height:1.45;color:#f0eeff;margin-bottom:28px;max-width:740px}
+.kf p{font-size:16px;line-height:1.95;color:rgba(240,238,255,.6);font-weight:300;max-width:700px}
+.mass-vis{display:flex;align-items:center;justify-content:center;gap:32px;margin:40px 0;flex-wrap:wrap}
+.mv-item{text-align:center}
+.mv-c{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;color:#f0eeff;margin:0 auto 12px;border:1px solid}
+.mv-c.big{width:130px;height:130px;font-size:13px;background:radial-gradient(circle,rgba(224,92,75,.5),rgba(224,92,75,.08));border-color:rgba(224,92,75,.4);box-shadow:0 0 28px rgba(224,92,75,.2)}
+.mv-c.sm{width:66px;height:66px;font-size:11px;background:radial-gradient(circle,rgba(77,217,232,.45),rgba(77,217,232,.08));border-color:rgba(77,217,232,.4);box-shadow:0 0 18px rgba(77,217,232,.2)}
+.mv-arr{font-family:'DM Mono',monospace;font-size:28px;color:var(--gold-dim)}
+.mv-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(240,238,255,.35);text-transform:uppercase}
+.alma-box{padding:18px 22px;border:1px solid rgba(77,217,232,.25);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--cyan);line-height:1.8;border-radius:2px;background:rgba(77,217,232,.03);text-align:left}
+
+/* ── EXHIBIT CARD ── */
+.ex-card{border:1px solid rgba(200,168,75,.15);margin-bottom:40px;border-radius:2px;overflow:hidden}
+.ex-card-head{padding:20px 28px;border-bottom:1px solid rgba(200,168,75,.12);display:flex;align-items:center;justify-content:space-between}
+.ex-card-head h3{font-family:'Cinzel',serif;font-size:14px;font-weight:400;letter-spacing:2px;color:var(--gold)}
+.ex-card-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(200,168,75,.35);text-transform:uppercase}
+.ex-card-body{padding:28px;background:rgba(255,255,255,.02)}
+.ex-caption{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(240,238,255,.28);text-transform:uppercase;text-align:center;margin-top:14px;line-height:1.7}
+.ex-note{font-size:14px;line-height:1.8;color:rgba(240,238,255,.48);font-weight:300;margin-top:16px;font-style:italic}
+
+/* ── CANVAS ── */
+canvas.interactive{display:block;margin:0 auto;border-radius:2px;max-width:100%}
+#lens-canvas{background:radial-gradient(ellipse at center,#08051f 0%,#020109 70%);cursor:grab}
+#lens-canvas:active{cursor:grabbing}
+#gas-canvas{background:#010008}
+
+/* ── TRANSITION ── */
+#trans{height:180px;background:linear-gradient(to bottom,var(--void),var(--paper));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.t-ring{position:absolute;border-radius:50%;border:1px solid;animation:tRing 4s ease-in-out infinite}
+.tr1{width:200px;height:200px;border-color:rgba(200,168,75,.08);animation-delay:0s}
+.tr2{width:360px;height:360px;border-color:rgba(200,168,75,.05);animation-delay:.9s}
+.tr3{width:520px;height:520px;border-color:rgba(200,168,75,.03);animation-delay:1.8s}
+@keyframes tRing{0%,100%{transform:scale(.94);opacity:0}50%{transform:scale(1);opacity:1}}
+.t-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:6px;text-transform:uppercase;color:rgba(80,70,60,.45);z-index:1}
+
+/* ── PAPER ── */
+#paper{background:var(--paper);color:var(--ink);padding:60px 40px 100px}
+.pw{max-width:720px;margin:0 auto}
+.p-ctrl{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;padding-bottom:18px;border-bottom:1px solid var(--rule)}
+.p-ctrl-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#aaa}
+.p-btns{display:flex;gap:10px}
+.pbtn{display:flex;align-items:center;gap:7px;padding:9px 18px;border:1px solid var(--rule);background:white;color:var(--ink-light);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:background .2s,color .2s,border-color .2s;border-radius:1px}
+.pbtn:hover,.pbtn.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* Narration bar */
+#nbar{background:var(--ink);color:var(--paper);padding:14px 20px;display:none;align-items:center;gap:14px;margin-bottom:26px;font-family:'DM Mono',monospace;font-size:10px}
+#nbar.on{display:flex}
+.n-btn{width:30px;height:30px;border:1px solid rgba(240,238,255,.25);border-radius:50%;background:none;color:var(--paper);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.n-btn:hover{background:rgba(255,255,255,.1)}
+.n-prog{flex:1;height:2px;background:rgba(255,255,255,.15);cursor:pointer}
+.n-fill{height:100%;background:var(--gold);width:0;transition:width .5s linear}
+.n-stat{color:rgba(240,238,255,.4);flex-shrink:0;min-width:80px;text-align:right}
+.n-gen{color:var(--gold);font-size:9px;letter-spacing:2px}
+
+/* Paper body */
+.p-cover{text-align:center;padding:44px 0 54px;border-bottom:2px solid var(--ink);margin-bottom:40px}
+.p-course{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:#aaa;text-transform:uppercase;margin-bottom:26px}
+.p-title{font-family:'Source Serif 4',serif;font-size:clamp(18px,2.8vw,26px);font-weight:400;line-height:1.4;color:var(--ink);max-width:520px;margin:0 auto 34px}
+.p-meta{font-family:'Source Serif 4',serif;font-size:14px;color:var(--ink-light);line-height:2.1}
+.p-sec{font-family:'Source Serif 4',serif;font-size:13.5px;font-weight:400;text-transform:uppercase;letter-spacing:2px;color:var(--ink);padding-bottom:8px;border-bottom:1px solid var(--rule);margin:36px 0 14px}
+.p-par{font-family:'Source Serif 4',serif;font-size:15px;line-height:2.05;color:var(--ink);text-align:justify;text-indent:2em;padding:6px 2px;border-radius:2px;transition:background .4s}
+.p-par:first-of-type{text-indent:0}
+
+/* Sentence highlight */
+.sent{border-radius:2px;padding:1px 2px;transition:background .3s}
+.sent.active{background:rgba(200,168,75,.22)}
+
+/* References */
+.refs{margin-top:44px}
+.ref{font-family:'Source Serif 4',serif;font-size:13.5px;line-height:1.85;color:var(--ink-light);padding-left:2em;text-indent:-2em;margin-bottom:18px}
+
+/* ── FADE IN ── */
+.fi{opacity:0;transform:translateY(34px);transition:opacity .9s,transform .9s}
+.fi.vis{opacity:1;transform:translateY(0)}
+
+/* ── GAS CONTROLS ── */
+.gas-ctrl{display:flex;align-items:center;justify-content:center;gap:20px;margin-top:18px}
+.gas-legend{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:12px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:8px}
+.leg-dot{width:10px;height:10px;border-radius:50%}
+.leg-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(240,238,255,.32);text-transform:uppercase}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){
+  .bio-grid{grid-template-columns:1fr;gap:48px}
+  #folders{flex-direction:column;height:auto}
+  .fld{width:100%}
+  .fld.open .fld-body{height:300px}
+  .kf{padding:32px}
+  .pbtn span{display:none}
+  body{cursor:auto}
+  #cur,#cur-ring{display:none}
+}
+@media print{
+  #loader,#cur,#cur-ring,#stars,#hero,#bio,#research,#trans,
+  .p-ctrl,#nbar{display:none!important}
+  #paper{padding:0;background:white}
+  .pw{max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOADER ─────────────────────────────────────────── -->
+<div id="loader">
+  <canvas id="ldr-canvas"></canvas>
+  <div class="ldr-text-wrap">
+    <div class="ldr-title">Scientist Spotlight</div>
+    <div class="ldr-sub">Preparing Exhibit · AST201H5</div>
+    <div class="ldr-bar"><div class="ldr-fill"></div></div>
+  </div>
+</div>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<canvas id="stars"></canvas>
+
+<main>
+
+<!-- ── HERO ──────────────────────────────────────────── -->
+<section id="hero">
+  <div class="pl pl-neb" id="pl-neb"></div>
+  <div class="pl pl-glow" id="pl-glw"></div>
+  <div class="hero-cnt" id="hero-txt">
+    <p class="h-eye">Scientist Spotlight · AST201H5</p>
+    <h1 class="h-name">Seiji<br>Fujimoto<em>Astronomer · University of Toronto</em></h1>
+    <p class="h-role">A spotlight by <strong>Given Messam-Harris</strong></p>
+  </div>
+  <div class="h-scroll">Scroll</div>
+</section>
+
+<!-- ── BIOGRAPHY ─────────────────────────────────────── -->
+<section id="bio" class="ex-sec">
+  <div class="sec-lbl">01 — Biographical Information</div>
+  <div class="bio-tag">Written by Given Messam-Harris</div>
+
+  <div class="bio-grid fi">
+    <div class="bio-text">
+      <p>Seiji Fujimoto is an assistant professor of astronomy at the University of Toronto whose research focuses on how the <strong>first galaxies and black holes</strong> formed in the early universe. He grew up near Kyoto, Japan, and was a competitive athlete before turning to science - playing baseball until elbow injuries ended his career at fifteen, after which he redirected that drive into Double Dutch and <strong>became a world champion in 2014.</strong></p>
+      <p>He earned his Bachelor's, Master's, and PhD in Astronomy from the <strong>University of Tokyo in 2019</strong>, then held postdoctoral positions as a <strong>DAWN Fellow in Copenhagen</strong> and a <strong>NASA Hubble Fellow in Austin</strong> before joining the University of Toronto as faculty in 2025.</p>
+    </div>
+    <div class="bio-stats">
+      <div><div class="stat-n">18</div><div class="stat-l">First-authored peer-reviewed papers</div></div>
+      <div><div class="stat-n">$1.6M</div><div class="stat-l">JWST grants as Principal Investigator (USD)</div></div>
+    </div>
+  </div>
+
+  <!-- FILE FOLDERS -->
+  <div class="fi" style="transition-delay:.2s">
+    <div class="folders-lbl">Career Milestones - Click a folder to open</div>
+    <div id="folders">
+
+      <div class="fld open">
+        <div class="fld-tab">2014</div>
+        <div class="fld-body">
+          <div class="fld-inner">
+            <div class="fld-year">2014</div>
+            <div class="fld-title">World Double Dutch Champion</div>
+            <div class="fld-desc">After elbow injuries ended a promising baseball career at fifteen, Fujimoto channelled his athletic drive into competitive Double Dutch jump rope, ultimately winning at the world championship level.</div>
+          </div>
+          <div class="fld-lines"></div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <div class="fld-tab">2019</div>
+        <div class="fld-body">
+          <div class="fld-inner">
+            <div class="fld-year">2015–2019</div>
+            <div class="fld-title">B.Sc. · M.Sc. · Ph.D. — University of Tokyo</div>
+            <div class="fld-desc">Completed all three degrees in Astronomy at the University of Tokyo. His doctoral research focused on high-redshift galaxies and submillimeter observational techniques using ALMA, establishing his expertise in the early universe and dusty star-forming systems.</div>
+          </div>
+          <div class="fld-lines"></div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <div class="fld-tab">2019–22</div>
+        <div class="fld-body">
+          <div class="fld-inner">
+            <div class="fld-year">2019–2022</div>
+            <div class="fld-title">DAWN Fellow — University of Copenhagen</div>
+            <div class="fld-desc">Joined the Cosmic Dawn Center -- one of Europe's premier hubs for the first billion years of cosmic history -- deepening his work on galaxy formation, AGN environments and the circumgalactic medium at high redshift.</div>
+          </div>
+          <div class="fld-lines"></div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <div class="fld-tab">2022–24</div>
+        <div class="fld-body">
+          <div class="fld-inner">
+            <div class="fld-year">2022–2024</div>
+            <div class="fld-title">NASA Hubble Fellow — UT Austin</div>
+            <div class="fld-desc">Received one of NASA's most prestigious postdoctoral fellowships, pursuing independent research on high-redshift galaxies, AGN and gravitational lensing with JWST and ALMA. Published first-authored papers in Nature and Nature Astronomy.</div>
+          </div>
+          <div class="fld-lines"></div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <div class="fld-tab">2025 →</div>
+        <div class="fld-body">
+          <div class="fld-inner">
+            <div class="fld-year">2025 →</div>
+            <div class="fld-title">Assistant Professor - University of Toronto</div>
+            <div class="fld-desc">Joined U of T's Department of Astronomy & Astrophysics with over $1.6 million USD in JWST grants as Principal Investigator. Continues building a research program at the intersection of gravitational lensing, galaxy formation and the circumgalactic medium.</div>
+          </div>
+          <div class="fld-lines"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── RESEARCH ───────────────────────────────────────── -->
+<section id="research" class="ex-sec">
+  <div class="sec-lbl">02 — Research Exhibit</div>
+
+  <div class="rsh-h fi">
+    <h2>Truth or Delusion?<br>A Monster Black Hole Reconsidered</h2>
+    <p class="sub">Fujimoto et al. (2020) · The Astrophysical Journal, 891, Article 64</p>
+  </div>
+
+  <!-- Key Finding -->
+  <div class="kf fi">
+    <h3>"Is the most luminous known quasar at z&nbsp;&gt;&nbsp;6 actually as massive as it appears?"</h3>
+    <p>Quasar J0100+2802 was estimated to host a black hole of ~12 billion solar masses, seemingly too large to have formed so early in cosmic history. Fujimoto et al. (2020) used ALMA submillimeter imaging to test whether gravitational lensing by a foreground galaxy was inflating the apparent brightness and inferred mass.</p>
+    <div class="mass-vis">
+      <div class="mv-item">
+        <div class="mv-c big">~12 B<br><small style="font-size:10px">M☉</small></div>
+        <div class="mv-lbl">Reported Mass</div>
+      </div>
+      <div class="mv-arr">→</div>
+      <div class="mv-item">
+        <div class="alma-box">ALMA imaging<br>resolves quasar into<br><strong style="color:#f0eeff">4 components</strong><br><br>Lensing model<br>applied</div>
+      </div>
+      <div class="mv-arr">→</div>
+      <div class="mv-item">
+        <div class="mv-c sm">&lt;1 B<br><small style="font-size:9px">M☉</small></div>
+        <div class="mv-lbl">Revised Mass</div>
+      </div>
+    </div>
+    <p>The four-component geometry is consistent with strong gravitational lensing. If the lens model is correct, the true black hole mass falls below one billion solar masses. This is still large but no longer theoretically impossible for the age of the universe.</p>
+  </div>
+
+  <!-- Gravitational Lensing Interactive -->
+  <div class="ex-card fi">
+    <div class="ex-card-head">
+      <h3>Interactive — Gravitational Lensing</h3>
+      <span class="ex-card-tag">Drag the galaxy</span>
+    </div>
+    <div class="ex-card-body">
+      <canvas id="lens-canvas" class="interactive" width="660" height="300"></canvas>
+      <p class="ex-caption">Drag the foreground galaxy · Align it with the quasar for an Einstein ring</p>
+      <p class="ex-note">This simulation models the central mechanism of Fujimoto et al. (2020): the change in inferred black hole mass derived from applying a gravitational lens model to ALMA imaging. In the paper, ALMA resolves quasar J0100+2802 into four compact components - a signature of strong lensing. By fitting a point-mass lens model, Fujimoto shows that the apparent ~12&thinsp;B M☉ black hole is magnified by a foreground galaxy, with the true mass falling below ~1&thinsp;B M☉. The Einstein radius in this interactive scales to illustrate that relationship: as magnification increases, inferred brightness (and thus inferred mass) rises, while the true underlying source remains the same.</p>
+    </div>
+  </div>
+
+  <!-- CGM Gas Halo Simulation -->
+  <div class="ex-card fi">
+    <div class="ex-card-head">
+      <h3>Simulation — Circumgalactic Gas Evolution</h3>
+    </div>
+    <div class="ex-card-body">
+      <canvas id="gas-canvas" class="interactive" width="660" height="460"></canvas>
+      <div class="gas-ctrl">
+        <button class="pbtn" id="gas-btn" onclick="toggleGas()" style="background:rgba(255,255,255,.05);border-color:rgba(200,168,75,.25);color:rgba(240,238,255,.65)">
+          <svg id="g-ico" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          <span id="g-lbl">Pause</span>
+        </button>
+        <span id="gas-tlbl" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(240,238,255,.3)">T = 0 Gyr</span>
+      </div>
+      <div class="gas-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2b8fff;box-shadow:0 0 6px #2b8fff"></div><span class="leg-lbl">Cold inflow (10⁴ K)</span></div>
+        <div class="leg-item"><div class="leg-dot" style="background:#ff7020;box-shadow:0 0 6px #ff7020"></div><span class="leg-lbl">Hot outflow (10⁶ K)</span></div>
+        <div class="leg-item"><div class="leg-dot" style="background:#aa55ff;box-shadow:0 0 6px #aa55ff"></div><span class="leg-lbl">Cooling gas</span></div>
+        <div class="leg-item"><div class="leg-dot" style="background:#ffcc30;box-shadow:0 0 6px #ffcc30"></div><span class="leg-lbl">Hot CGM halo</span></div>
+      </div>
+      <p class="ex-caption" style="margin-top:12px">Inspired by Fujimoto's CGM research · Milky Way-like dark matter halo · Cold accretion → shock heating → hot halo → galactic fountain → repeat</p>
+
+      <!-- CGM Explanation -->
+      <div style="margin-top:28px;border-top:1px solid rgba(200,168,75,.12);padding-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div style="padding:18px;border:1px solid rgba(200,168,75,.1);border-radius:2px;background:rgba(200,168,75,.03)">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--cyan);margin-bottom:10px">PHASE 1 — COLD ACCRETION</div>
+          <p style="font-size:13.5px;line-height:1.75;color:rgba(240,238,255,.55);font-weight:300">Thick blue streams of cold gas (10⁴ K) flow directly into the galaxy from the cosmic web. No hot halo exists yet. Accretion is efficient and rapid, star formation is vigorous as raw fuel pours in. The galaxy core brightens as it builds stellar mass.</p>
+        </div>
+        <div style="padding:18px;border:1px solid rgba(200,168,75,.1);border-radius:2px;background:rgba(200,168,75,.03)">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:10px">PHASE 2 — SHOCK HEATING</div>
+          <p style="font-size:13.5px;line-height:1.75;color:rgba(240,238,255,.55);font-weight:300">As the halo grows in mass, infalling gas is shock-heated at the virial radius. An orange-red hot atmosphere begins forming around the galaxy. Incoming streams slow, bend and diffuse. Some are stopped at the boundary entirely. Heat ripples propagate outward.</p>
+        </div>
+        <div style="padding:18px;border:1px solid rgba(200,168,75,.1);border-radius:2px;background:rgba(200,168,75,.03)">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:#ff7020;margin-bottom:10px">PHASE 3 — HOT HALO DOMINANCE</div>
+          <p style="font-size:13.5px;line-height:1.75;color:rgba(240,238,255,.55);font-weight:300">A large, diffuse hot CGM halo (10⁶ K) envelops the galaxy. Cold inflow is reduced to thin wisps. Inside the galaxy, supernova feedback drives energy into the surrounding medium. Motion becomes slow and floaty; the circumgalactic medium is now thermally dominated.</p>
+        </div>
+        <div style="padding:18px;border:1px solid rgba(200,168,75,.1);border-radius:2px;background:rgba(200,168,75,.03)">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:#aa55ff;margin-bottom:10px">PHASE 4 — GALACTIC FOUNTAIN</div>
+          <p style="font-size:13.5px;line-height:1.75;color:rgba(240,238,255,.55);font-weight:300">Hot gas ejected by supernovae (orange arcs) rises outward, cools through purple into blue and falls back toward the galaxy as recycled cold inflow. This fountain cycle re-seeds star formation. The loop then restarts - connecting outflow back into the next accretion phase.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── TRANSITION ─────────────────────────────────────── -->
+<div id="trans">
+  <div class="t-ring tr1"></div>
+  <div class="t-ring tr2"></div>
+  <div class="t-ring tr3"></div>
+  <span class="t-lbl">— Entering the Paper —</span>
+</div>
+
+<!-- ── ACADEMIC PAPER ─────────────────────────────────── -->
+<section id="paper">
+  <div class="pw">
+
+    <div class="p-ctrl">
+      <span class="p-ctrl-lbl">Academic Paper</span>
+      <div class="p-btns">
+        <button class="pbtn" id="narr-btn" onclick="toggleNarr()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <span>AI Read Aloud</span>
+        </button>
+        <button class="pbtn" onclick="downloadPDF()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span>Download PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Narration bar -->
+    <div id="nbar">
+      <button class="n-btn" id="nplay" onclick="narPlay()">
+        <svg id="ico-play" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="ico-pause" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <div class="n-prog"><div class="n-fill" id="n-fill"></div></div>
+      <span class="n-gen" id="n-gen" style="display:none">Generating…</span>
+      <span class="n-stat" id="n-stat">¶ — / 5</span>
+    </div>
+
+    <!-- COVER -->
+    <div class="p-cover" id="paper-content-start">
+      <p class="p-course">AST201H5: Stars, Galaxies and the Universe · University of Toronto Mississauga</p>
+      <h1 class="p-title">Scientist Spotlight: Seiji Fujimoto</h1>
+      <div class="p-meta">Given Messam-Harris<br>Professor Lea Hirsch<br>March 18, 2026</div>
+    </div>
+
+    <!-- BIOGRAPHICAL INFORMATION -->
+    <h2 class="p-sec">Biographical Information</h2>
+
+    <p class="p-par" id="pp0">Seiji Fujimoto is an assistant professor of astronomy at the University of Toronto whose research focuses on how the first galaxies and black holes formed in the early universe. (Fujimoto, 2025) He grew up near Kyoto, Japan, and was a competitive athlete before turning to science – playing baseball until elbow injuries ended his career at fifteen, after which he redirected that drive into Double Dutch and became a world champion in 2014 (Fujimoto, 2025). He earned his Bachelor's, Master's, and PhD in Astronomy from the University of Tokyo in 2019, then held postdoctoral positions as a DAWN Fellow in Copenhagen and a NASA Hubble Fellow in Austin before joining the University of Toronto as faculty in 2025 (Fujimoto, 2025).</p>
+
+    <p class="p-par" id="pp1">What makes Fujimoto exceptional as a researcher is the remarkable volume and range of his output. As of 2025 he has published 18 first-authored papers – articles in which he personally led the scientific work – in peer-reviewed journals including Nature and Nature Astronomy, covering topics from the sizes of dusty star-forming galaxies (Fujimoto et al., 2018) to whether a record-breaking black hole might be an optical illusion of gravity (Fujimoto et al., 2020). That kind of sustained, first-authored productivity at an early career stage is rare and it reflects exactly the qualities his biography suggests: discipline, adaptability and the willingness to pursue difficult questions relentlessly.</p>
+
+    <!-- RESEARCH -->
+    <h2 class="p-sec">Research</h2>
+
+    <p class="p-par" id="pp2">One of Fujimoto's most compelling first-authored papers investigates whether the most massive known black hole in the early universe is really what it appears to be; it is titled "Truth or Delusion? A Possible Gravitational Lensing Interpretation of the Ultraluminous Quasar SDSS J010013.02+280225.8 at z = 6.30" (Fujimoto et al., 2020). The object at the centre of the paper, a quasar called J0100+2802, is seen at a redshift of z = 6.30 – meaning we observe it as it existed less than one billion years after the Big Bang, a direct look back in time that connects to one of the central ideas in AST201. Quasars are powered by supermassive black holes actively consuming surrounding material, releasing energy so intense that a single quasar can outshine an entire galaxy; the AST201 AGN lecture explains this framework precisely (Hirsch, 2026, slides 8–11). Based on its observed brightness, earlier studies estimated J0100+2802's black hole at 12 billion solar masses, seemingly too large to have grown so quickly under any standard model.</p>
+
+    <p class="p-par" id="pp3">Rather than accepting that estimate, Fujimoto asked whether gravitational lensing could be magnifying the quasar's light, making it appear far brighter than it truly is (Fujimoto et al., 2020). Gravitational lensing – the bending of light by a massive foreground object – is a direct consequence of general relativity introduced in the course as a prediction of how mass warps spacetime (Hirsch, 2026, slides 39–44). Using high-resolution ALMA images, he found the quasar's dust emission split into four compact components, a classic lensing signature. Spectroscopic data confirmed a foreground galaxy along the same line of sight and a lens model showed it could plausibly produce exactly that four-image pattern. If correct, the true black hole mass falls below one billion solar masses. Still large, but no longer theoretically impossible.</p>
+
+    <p class="p-par" id="pp4">Fujimoto acknowledges that the four components could alternatively represent dusty star-forming regions in an early merging system, a scenario that connects to our discussions of how galaxies grow through mergers and gas inflow. Presenting both possibilities honestly, rather than overstating one interpretation, is precisely the kind of careful scientific reasoning the paper models.</p>
+
+    <!-- REFERENCES -->
+    <div class="refs" id="paper-refs">
+      <h2 class="p-sec">References</h2>
+      <p class="ref">Fujimoto, S. (2025). <em>About me.</em> Seiji Fujimoto. https://sfseiji.github.io/pages/about.html</p>
+      <p class="ref">Fujimoto, S., Ouchi, M., Kohno, K., Yamaguchi, Y., Hatsukade, B., Ueda, Y., Shibuya, T., Inoue, S., Oogi, T., Toft, S., Gómez-Guijarro, C., Wang, T., Espada, D., Nagao, T., Tanaka, I., Ao, Y., Umehata, H., Taniguchi, Y., Nakanishi, K., … Dunlop, J. S. (2018). ALMA 26 arcmin² survey of GOODS-S at one millimeter (ASAGAO): Average morphology of high-z dusty star-forming galaxies in an exponential disk (n ≃ 1). <em>The Astrophysical Journal, 861</em>(1), Article 7. https://doi.org/10.3847/1538-4357/aac6c4</p>
+      <p class="ref">Fujimoto, S., Oguri, M., Nagao, T., Izumi, T., &amp; Ouchi, M. (2020). Truth or delusion? A possible gravitational lensing interpretation of the ultraluminous quasar SDSS J010013.02+280225.8 at z = 6.30. <em>The Astrophysical Journal, 891</em>(1), Article 64. https://doi.org/10.3847/1538-4357/ab718c</p>
+      <p class="ref">Hirsch, L. (2026). <em>AST201H5: Exploring the universe—Day 25: Active Galactic Nuclei</em> [Course slides, Google Slides]. University of Toronto Mississauga.</p>
+      <p class="ref">Hirsch, L. (2026). <em>AST201H5: Exploring the universe—Day 3: Gravity and General Relativity</em> [Course slides, Google Slides]. University of Toronto Mississauga.</p>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   LOADER — SHOOTING STARS
+════════════════════════════════════════════════════════ */
+(function(){
+  const lc = document.getElementById('ldr-canvas');
+  lc.width = window.innerWidth; lc.height = window.innerHeight;
+  const ctx = lc.getContext('2d');
+
+  const bgStars = Array.from({length:200},()=>({
+    x:Math.random()*lc.width, y:Math.random()*lc.height,
+    r:Math.random()*1.4+0.2, op:Math.random()*0.5+0.1
+  }));
+
+  class ShootStar {
+    constructor(){this.reset(true)}
+    reset(init){
+      this.x = Math.random()*lc.width*1.2;
+      this.y = -20 + Math.random()*lc.height*0.4;
+      this.len = 100+Math.random()*160;
+      this.spd = 10+Math.random()*14;
+      this.ang = Math.PI/4+(Math.random()-.5)*0.25;
+      this.alpha = 0;
+      this.maxAlpha = 0.5+Math.random()*0.5;
+      this.fade = false;
+      this.delay = init ? Math.random()*90 : 0;
+      this.dc = 0;
+    }
+    update(){
+      if(this.dc < this.delay){this.dc++;return}
+      this.x += Math.cos(this.ang)*this.spd;
+      this.y += Math.sin(this.ang)*this.spd;
+      if(!this.fade) this.alpha=Math.min(this.maxAlpha,this.alpha+0.06);
+      if(this.alpha>=this.maxAlpha) this.fade=true;
+      if(this.fade) this.alpha-=0.025;
+      if(this.alpha<=0||this.x>lc.width+100||this.y>lc.height+100) this.reset(false);
+    }
+    draw(){
+      if(this.alpha<=0||this.dc<this.delay) return;
+      const tx=this.x-Math.cos(this.ang)*this.len, ty=this.y-Math.sin(this.ang)*this.len;
+      const g=ctx.createLinearGradient(tx,ty,this.x,this.y);
+      g.addColorStop(0,'rgba(200,168,75,0)');
+      g.addColorStop(0.6,`rgba(220,210,255,${this.alpha*0.35})`);
+      g.addColorStop(1,`rgba(255,255,255,${this.alpha})`);
+      ctx.save(); ctx.strokeStyle=g; ctx.lineWidth=1.6;
+      ctx.shadowBlur=8; ctx.shadowColor=`rgba(200,168,75,${this.alpha*0.5})`;
+      ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(this.x,this.y); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  const shooters = Array.from({length:12},()=>new ShootStar());
+  let lframe=0;
+
+  function ldrDraw(){
+    ctx.clearRect(0,0,lc.width,lc.height);
+    ctx.fillStyle='#020109'; ctx.fillRect(0,0,lc.width,lc.height);
+    bgStars.forEach(s=>{
+      const f=0.4+0.6*Math.sin(lframe*0.018+s.x);
+      ctx.fillStyle=`rgba(220,215,255,${s.op*f})`;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+    });
+    shooters.forEach(s=>{s.update();s.draw()});
+    lframe++;
+    if(!document.getElementById('loader').classList.contains('gone'))
+      requestAnimationFrame(ldrDraw);
+  }
+  ldrDraw();
+  setTimeout(()=>document.getElementById('loader').classList.add('gone'),3800);
+})();
+
+/* ════════════════════════════════════════════════════════
+   CURSOR
+════════════════════════════════════════════════════════ */
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function animCur(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*0.18;ry+=(my-ry)*0.18;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animCur);
+})();
+
+/* ════════════════════════════════════════════════════════
+   STARFIELD
+════════════════════════════════════════════════════════ */
+(function(){
+  const c=document.getElementById('stars');
+  const ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize(); window.addEventListener('resize',resize);
+  const stars=Array.from({length:260},()=>({
+    x:Math.random(),y:Math.random(),
+    r:Math.random()*1.5+0.2,op:Math.random()*0.5+0.1,
+    spd:Math.random()*0.012+0.004,ph:Math.random()*Math.PI*2
+  }));
+  let t=0;
+  (function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      const op=s.op*(0.5+0.5*Math.sin(t*s.spd+s.ph));
+      ctx.fillStyle=`rgba(225,220,255,${op})`;
+      ctx.beginPath();ctx.arc(s.x*c.width,s.y*c.height,s.r,0,Math.PI*2);ctx.fill();
+    });
+    t++;requestAnimationFrame(draw);
+  })();
+})();
+
+/* ════════════════════════════════════════════════════════
+   PARALLAX HERO
+════════════════════════════════════════════════════════ */
+(function(){
+  const neb=document.getElementById('pl-neb'),glw=document.getElementById('pl-glw'),txt=document.getElementById('hero-txt');
+  window.addEventListener('scroll',()=>{
+    const y=window.scrollY,vH=window.innerHeight;
+    if(y<vH*1.5){
+      neb.style.transform=`translateY(${y*.18}px)`;
+      glw.style.transform=`translateY(${y*.32}px)`;
+      txt.style.transform=`translateY(${y*.44}px)`;
+      txt.style.opacity=Math.max(0,1-y/(vH*.65));
+    }
+  },{passive:true});
+})();
+
+/* ════════════════════════════════════════════════════════
+   SCROLL FADE
+════════════════════════════════════════════════════════ */
+const scObs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis')}),{threshold:.1});
+document.querySelectorAll('.fi').forEach(el=>scObs.observe(el));
+
+/* ════════════════════════════════════════════════════════
+   FILE FOLDERS
+════════════════════════════════════════════════════════ */
+document.querySelectorAll('.fld').forEach(f=>{
+  f.addEventListener('click',()=>{
+    document.querySelectorAll('.fld').forEach(x=>x.classList.remove('open'));
+    f.classList.add('open');
+  });
+});
+
+/* ════════════════════════════════════════════════════════
+   GRAVITATIONAL LENSING DEMO
+════════════════════════════════════════════════════════ */
+(function(){
+  const c=document.getElementById('lens-canvas'),ctx=c.getContext('2d');
+  const W=c.width,H=c.height,cx=W/2,cy=H/2;
+  const eR=62;
+  const obs={x:W*.08,y:cy};
+  const src={x:W*.92,y:cy};
+  let lens={x:W*.46,y:cy};
+  let drag=false;
+
+  function lpos(e){
+    const r=c.getBoundingClientRect(),sx=W/r.width,sy=H/r.height;
+    const ex=e.touches?e.touches[0].clientX:e.clientX;
+    const ey=e.touches?e.touches[0].clientY:e.clientY;
+    return{x:(ex-r.left)*sx,y:(ey-r.top)*sy};
+  }
+  c.addEventListener('mousedown',e=>{const p=lpos(e);if(Math.hypot(p.x-lens.x,p.y-lens.y)<38){drag=true}});
+  window.addEventListener('mousemove',e=>{if(drag){const p=lpos(e);lens.x=p.x;lens.y=p.y}});
+  window.addEventListener('mouseup',()=>drag=false);
+  c.addEventListener('touchstart',e=>{const p=lpos(e);if(Math.hypot(p.x-lens.x,p.y-lens.y)<50){drag=true}e.preventDefault()},{passive:false});
+  window.addEventListener('touchmove',e=>{if(drag){const p=lpos(e);lens.x=p.x;lens.y=p.y}});
+  window.addEventListener('touchend',()=>drag=false);
+
+  function getImgs(){
+    const dx=src.x-lens.x,dy=src.y-lens.y;
+    const b=Math.hypot(dx,dy),phi=Math.atan2(dy,dx);
+    const d=Math.sqrt(b*b+4*eR*eR);
+    return[
+      {x:lens.x+(b+d)/2*Math.cos(phi),y:lens.y+(b+d)/2*Math.sin(phi),mag:eR/((b+d)/2)},
+      {x:lens.x-(b-d)/2*Math.cos(phi) - (b<d?(2*(d-b))*Math.cos(phi):0),y:lens.y-(b-d)/2*Math.sin(phi) - (b<d?(2*(d-b))*Math.sin(phi):0),mag:eR/Math.abs((b-d)/2+0.01)}
+    ];
+  }
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    const bg=ctx.createLinearGradient(0,0,W,0);
+    bg.addColorStop(0,'#060415');bg.addColorStop(.5,'#08051a');bg.addColorStop(1,'#06040f');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+    const imgs=getImgs();
+    const b=Math.hypot(src.x-lens.x,src.y-lens.y);
+    const isRing=b<10;
+
+    // Einstein radius ring (dashed)
+    ctx.save();ctx.setLineDash([4,6]);ctx.strokeStyle='rgba(200,168,75,.15)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(lens.x,lens.y,eR,0,Math.PI*2);ctx.stroke();ctx.restore();
+
+    if(isRing){
+      ctx.save();ctx.strokeStyle='rgba(77,217,232,.65)';ctx.lineWidth=2.5;
+      ctx.shadowBlur=18;ctx.shadowColor='#4dd9e8';
+      ctx.beginPath();ctx.arc(lens.x,lens.y,eR,0,Math.PI*2);ctx.stroke();ctx.restore();
+      lbl('EINSTEIN RING',lens.x,lens.y+eR+16,'rgba(77,217,232,.65)',9);
+    } else {
+      // Light path img1
+      const c1={x:(src.x+imgs[0].x)/2,y:lens.y-18};
+      const c1b={x:(imgs[0].x+obs.x)/2,y:lens.y-18};
+      ctx.save();ctx.globalAlpha=.38;ctx.strokeStyle='#4dd9e8';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(src.x,src.y);ctx.quadraticCurveTo(c1.x,c1.y,lens.x,lens.y);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(lens.x,lens.y);ctx.quadraticCurveTo(c1b.x,c1b.y,obs.x,obs.y);ctx.stroke();ctx.restore();
+      // Light path img2
+      const c2={x:(src.x+imgs[1].x)/2,y:lens.y+18};
+      const c2b={x:(imgs[1].x+obs.x)/2,y:lens.y+18};
+      ctx.save();ctx.globalAlpha=.22;ctx.strokeStyle='#c8a84b';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(src.x,src.y);ctx.quadraticCurveTo(c2.x,c2.y,lens.x,lens.y);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(lens.x,lens.y);ctx.quadraticCurveTo(c2b.x,c2b.y,obs.x,obs.y);ctx.stroke();ctx.restore();
+      // Images
+      ctx.save();ctx.shadowBlur=16;ctx.shadowColor='#4dd9e8';ctx.fillStyle='#4dd9e8';
+      ctx.beginPath();ctx.arc(imgs[0].x,imgs[0].y,Math.min(5,2+imgs[0].mag*3),0,Math.PI*2);ctx.fill();ctx.restore();
+      lbl('IMAGE 1',imgs[0].x,imgs[0].y-13,'rgba(77,217,232,.6)',9);
+      ctx.save();ctx.shadowBlur=12;ctx.shadowColor='rgba(200,168,75,.8)';ctx.fillStyle='rgba(200,168,75,.7)';
+      ctx.beginPath();ctx.arc(imgs[1].x,imgs[1].y,Math.min(4,1.5+imgs[1].mag*2),0,Math.PI*2);ctx.fill();ctx.restore();
+      lbl('IMAGE 2',imgs[1].x,imgs[1].y+15,'rgba(200,168,75,.5)',9);
+    }
+
+    // Source
+    ctx.save();ctx.globalAlpha=.2;ctx.shadowBlur=12;ctx.shadowColor='#ff8040';ctx.fillStyle='#ff8040';
+    ctx.beginPath();ctx.arc(src.x,src.y,5,0,Math.PI*2);ctx.fill();ctx.restore();
+    lbl('QUASAR J0100+2802',src.x,src.y-14,'rgba(255,128,64,.35)',9);
+    lbl('z = 6.30',src.x,src.y+18,'rgba(255,128,64,.28)',8);
+
+    // Lens galaxy
+    const lg=ctx.createRadialGradient(lens.x,lens.y,0,lens.x,lens.y,22);
+    lg.addColorStop(0,'rgba(200,168,75,.8)');lg.addColorStop(1,'transparent');
+    ctx.fillStyle=lg;ctx.beginPath();ctx.arc(lens.x,lens.y,22,0,Math.PI*2);ctx.fill();
+    ctx.save();ctx.fillStyle='rgba(200,168,75,.9)';ctx.shadowBlur=10;ctx.shadowColor='rgba(200,168,75,.6)';
+    ctx.beginPath();ctx.arc(lens.x,lens.y,6,0,Math.PI*2);ctx.fill();ctx.restore();
+    lbl(drag?'DRAGGING…':'FOREGROUND GALAXY',lens.x,lens.y+24,'rgba(200,168,75,.6)',9);
+    if(!drag) lbl('(drag me)',lens.x,lens.y+34,'rgba(200,168,75,.3)',8);
+
+    // Observer
+    ctx.save();ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('👁',obs.x,obs.y+6);ctx.restore();
+    lbl('OBSERVER',obs.x,obs.y+22,'rgba(240,238,255,.3)',9);
+
+    // Mass label
+    const magnif=Math.max(1,(eR/Math.max(b,1)));
+    const inferred=(magnif*magnif).toFixed(1);
+    ctx.save();ctx.font='9px DM Mono,monospace';ctx.fillStyle='rgba(77,217,232,.35)';ctx.textAlign='right';
+    ctx.fillText(`Magnification: ×${Math.min(99,magnif).toFixed(1)}`,W-12,H-24);
+    ctx.fillText(`Apparent mass factor: ×${Math.min(9999,inferred)}`,W-12,H-12);ctx.restore();
+
+    lbl('Align lens with quasar for Einstein ring',W/2,H-12,'rgba(200,168,75,.18)',8);
+    requestAnimationFrame(frame);
+  }
+
+  function lbl(t,x,y,col,sz){
+    ctx.font=`${sz}px 'DM Mono',monospace`;ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(t,x,y);
+  }
+
+  frame();
+})();
+
+/* ════════════════════════════════════════════════════════
+   CGM SIMULATION — 4-Phase 30s Loop
+════════════════════════════════════════════════════════ */
+(function(){
+  const c=document.getElementById('gas-canvas'),ctx=c.getContext('2d');
+  const W=c.width,H=c.height,CX=W/2,CY=H/2;
+  const PERIOD=2700; // 45s loop — longer phases so each is readable
+  let fr=0,running=true;
+  window._gasToggle=()=>{running=!running};
+
+  function lerp(a,b,t){return a+(b-a)*t}
+  function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+  function ss(t){t=clamp(t,0,1);return t*t*(3-2*t)}
+  function hat(t,lo,mid,hi){
+    if(t<=lo||t>=hi)return 0;
+    if(t<=mid)return ss((t-lo)/(mid-lo));
+    return ss((hi-t)/(hi-mid));
+  }
+
+  // ── Stream particles (Phase 1 + 2)
+  const STREAM_ANGLES=[0,60,120,180,240,300].map(d=>d*Math.PI/180);
+  const streamPs=[];
+  STREAM_ANGLES.forEach(ang=>{
+    for(let i=0;i<22;i++){
+      streamPs.push({
+        ang, offset:Math.random(),
+        wf:0.6+Math.random()*.8,
+        spd:0.9+Math.random()*.4
+      });
+    }
+  });
+
+  // ── Halo particles (Phase 2 + 3)
+  const haloPs=Array.from({length:120},()=>({
+    ang:Math.random()*Math.PI*2,
+    r:90+Math.random()*70,
+    phase_off:Math.random(),
+    dang:(Math.random()-.5)*.003,
+    temp:0.6+Math.random()*.4
+  }));
+
+  // ── Fountain particles (Phase 4)
+  const fountPs=Array.from({length:180},()=>({
+    arc_ang:Math.random()*Math.PI*2,
+    offset:Math.random(),
+    spd:0.8+Math.random()*.5
+  }));
+
+  // ── SNe flicker state
+  const sne=[
+    {t:0,period:0.28,x:CX+8,y:CY-6},
+    {t:0.33,period:0.22,x:CX-10,y:CY+4},
+    {t:0.66,period:0.32,x:CX+3,y:CY+10}
+  ];
+
+  function drawGalaxyCoreLayer(brightness, coreScale){
+    const r=18*coreScale;
+    const diskR=28*coreScale;
+    const g=ctx.createRadialGradient(CX,CY,0,CX,CY,r*1.8);
+    g.addColorStop(0,`rgba(255,255,210,${brightness})`);
+    g.addColorStop(0.35,`rgba(255,200,100,${brightness*.7})`);
+    g.addColorStop(1,'transparent');
+    ctx.save();ctx.shadowBlur=20+10*coreScale;ctx.shadowColor='#ffd060';
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(CX,CY,r*1.8,0,Math.PI*2);ctx.fill();
+    // Disk
+    ctx.fillStyle=`rgba(255,230,140,${brightness*.4})`;
+    ctx.save();ctx.scale(1,.22);ctx.beginPath();ctx.arc(CX,CY/.22,diskR,0,Math.PI*2);ctx.fill();
+    ctx.restore();ctx.restore();
+  }
+
+  function drawPhase1(w){
+    if(w<=0)return;
+    const R=220;
+    streamPs.forEach(p=>{
+      const ft=((p.offset+(fr*p.spd*.0022))%1);
+      const r=R*(1-ft);
+      if(r<16)return;
+      const px=CX+Math.cos(p.ang+Math.PI)*r;
+      const py=CY+Math.sin(p.ang+Math.PI)*r;
+      const sz=(2+p.wf)*(0.5+0.5*ft);
+      const al=w*0.55*Math.sin(ft*Math.PI);
+      ctx.save();ctx.shadowBlur=10;ctx.shadowColor=`rgba(43,143,255,${al})`;
+      ctx.fillStyle=`rgba(${lerp(80,30,ft)|0},${lerp(160,110,ft)|0},255,${al})`;
+      ctx.beginPath();ctx.arc(px,py,sz,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+  }
+
+  function drawPhase2(w,prog){
+    if(w<=0)return;
+    // Growing halo
+    const hR=lerp(30,140,ss(prog));
+    const hAl=w*prog*.55;
+    const hg=ctx.createRadialGradient(CX,CY,hR*.25,CX,CY,hR);
+    hg.addColorStop(0,`rgba(255,130,30,${hAl*.5})`);
+    hg.addColorStop(.5,`rgba(255,80,15,${hAl*.55})`);
+    hg.addColorStop(1,`rgba(200,40,10,${hAl*.08})`);
+    ctx.fillStyle=hg;ctx.beginPath();ctx.arc(CX,CY,hR,0,Math.PI*2);ctx.fill();
+    // Ripple
+    if(prog>.25&&prog<.85){
+      const rp=hR+18*Math.sin(prog*Math.PI*5);
+      ctx.save();ctx.strokeStyle=`rgba(255,160,60,${w*(1-Math.abs(prog-.55)*1.8)*.35})`;
+      ctx.lineWidth=1.5;ctx.setLineDash([6,5]);
+      ctx.beginPath();ctx.arc(CX,CY,rp,0,Math.PI*2);ctx.stroke();ctx.restore();
+    }
+    // Slowing streams
+    const sf=w*(1-prog*.75);
+    streamPs.forEach(p=>{
+      const ft=((p.offset+(fr*p.spd*.0014))%1);
+      const r=Math.max(hR+5,220*(1-ft));
+      const px=CX+Math.cos(p.ang+Math.PI)*r;
+      const py=CY+Math.sin(p.ang+Math.PI)*r;
+      const al=sf*0.4*Math.sin(ft*Math.PI);
+      ctx.save();ctx.fillStyle=`rgba(60,130,255,${al})`;
+      ctx.beginPath();ctx.arc(px,py,p.wf*1.2,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+  }
+
+  function drawPhase3(w,prog){
+    if(w<=0)return;
+    // Dominant halo
+    const hR=140+prog*20;
+    const hg=ctx.createRadialGradient(CX,CY,28,CX,CY,hR);
+    hg.addColorStop(0,`rgba(255,145,38,${.7*w})`);
+    hg.addColorStop(.38,`rgba(255,75,16,${.52*w})`);
+    hg.addColorStop(.7,`rgba(200,38,8,${.22*w})`);
+    hg.addColorStop(1,'transparent');
+    ctx.fillStyle=hg;ctx.beginPath();ctx.arc(CX,CY,hR,0,Math.PI*2);ctx.fill();
+    // Thin blue wisps
+    streamPs.slice(0,40).forEach(p=>{
+      const ft=((p.offset+(fr*p.spd*.0006))%1);
+      const r=160+60*(1-ft);
+      if(r<148)return;
+      const px=CX+Math.cos(p.ang+Math.PI)*r;
+      const py=CY+Math.sin(p.ang+Math.PI)*r;
+      const al=w*.12*Math.sin(ft*Math.PI)*(1-prog*.8);
+      ctx.save();ctx.fillStyle=`rgba(80,150,255,${al})`;
+      ctx.beginPath();ctx.arc(px,py,1,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+    // SNe flickers
+    sne.forEach(sn=>{
+      const st=((fr*.018+sn.t)%1);
+      if(st>.3)return;
+      const br=Math.sin(st/.3*Math.PI);
+      ctx.save();ctx.shadowBlur=18;ctx.shadowColor=`rgba(255,220,100,${br*w})`;
+      ctx.fillStyle=`rgba(255,240,160,${br*w})`;
+      ctx.beginPath();ctx.arc(sn.x,sn.y,2+br*3.5,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+  }
+
+  function drawPhase4(w,prog){
+    if(w<=0)return;
+    // Fading halo bg
+    const hg=ctx.createRadialGradient(CX,CY,30,CX,CY,158);
+    hg.addColorStop(0,`rgba(255,130,30,${w*(1-prog*.65)*.4})`);
+    hg.addColorStop(1,'transparent');
+    ctx.fillStyle=hg;ctx.beginPath();ctx.arc(CX,CY,158,0,Math.PI*2);ctx.fill();
+    // Galactic fountain arcs
+    fountPs.forEach(p=>{
+      const pt=((p.offset+(fr*p.spd*.0025))%1);
+      let r,temp,alpha;
+      if(pt<0.5){
+        // Outgoing: hot orange
+        const ot=pt/0.5;
+        r=15+ot*205;
+        temp=lerp(1,.35,ot); // hot → cooling
+        alpha=w*.65*Math.sin(ot*Math.PI);
+      } else {
+        // Returning: cooling to blue
+        const it=(pt-0.5)/0.5;
+        r=220-it*205;
+        temp=lerp(.35,.0,it); // purple → blue
+        alpha=w*.5*Math.sin(it*Math.PI)*prog;
+      }
+      const ca=p.arc_ang+(pt<.5?0.18*(pt/.5):-0.1*((pt-.5)/.5));
+      const px=CX+Math.cos(ca)*r,py=CY+Math.sin(ca)*r;
+      // temp → color: 0=blue, 0.35=purple, 1=orange
+      const cr=temp>0.35?lerp(170,255,(temp-.35)/.65):lerp(43,170,temp/.35);
+      const cg=temp>0.35?lerp(80,120,(temp-.35)/.65):lerp(80,80,0);
+      const cb=temp>0.35?lerp(255,30,(temp-.35)/.65):lerp(255,255,temp/.35);
+      const sz=1.4+(temp>.5?1.4:.6);
+      ctx.save();
+      ctx.shadowBlur=8;ctx.shadowColor=`rgba(${cr|0},${cg|0},${cb|0},${alpha})`;
+      ctx.fillStyle=`rgba(${cr|0},${cg|0},${cb|0},${alpha})`;
+      ctx.beginPath();ctx.arc(px,py,sz,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+  }
+
+  const phaseNames=['COLD ACCRETION','SHOCK HEATING','HOT HALO DOMINANCE','GALACTIC FOUNTAIN'];
+  let labelAlphas=[0,0,0,0];
+
+  function render(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#010008';ctx.fillRect(0,0,W,H);
+
+    if(running)fr++;
+    const T=(fr%PERIOD)/PERIOD;
+
+    // Phase weights using smooth hats — tuned for 45s loop
+    const w=[
+      hat(T,0,.15,.32) + hat(T,.88,1,1.0), // P1 cold accretion
+      hat(T,.22,.42,.58),                    // P2 shock heating
+      hat(T,.47,.67,.82),                    // P3 hot halo
+      hat(T,.72,.88,1.0) + hat(T,0,0,.10)   // P4 fountain + loop
+    ];
+
+    let dom=0; w.forEach((v,i)=>{if(v>w[dom])dom=i});
+    w.forEach((_,i)=>{
+      labelAlphas[i]+=(i===dom?1:0-labelAlphas[i])*0.035;
+    });
+
+    const p2prog=T<.58?clamp((T-.22)/.36,0,1):0;
+    const p3prog=clamp((T-.47)/.35,0,1);
+    const p4prog=clamp((T-.72)/.28,0,1);
+
+    // Galaxy core scale: big+bright during P1, shrinks P2-P3, pulses P4
+    const p1w=w[0], p3w=w[2], p4w=w[3];
+    const sne_pulse=p3w>0.05? 1+0.18*Math.sin(fr*0.12):1;
+    const coreScale=clamp(lerp(lerp(1.0,0.72,p3prog),sne_pulse,p4w)*( 1 + 0.3*p1w ), 0.6, 1.5);
+    const coreBrightness=0.55 + 0.45*p1w - 0.15*w[2];
+
+    drawPhase1(w[0]);
+    drawPhase2(w[1],p2prog);
+    drawPhase3(w[2],p3prog);
+    drawPhase4(w[3],p4prog);
+    drawGalaxyCoreLayer(coreBrightness, coreScale);
+
+    // Dark matter halo boundary ring
+    ctx.save();ctx.setLineDash([4,10]);
+    ctx.strokeStyle=`rgba(100,60,200,0.12)`;ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(CX,CY,210,0,Math.PI*2);ctx.stroke();ctx.restore();
+
+    // Labels
+    ctx.save();ctx.textAlign='center';
+    phaseNames.forEach((name,i)=>{
+      if(labelAlphas[i]<.02)return;
+      ctx.font='9px DM Mono,monospace';
+      ctx.fillStyle=`rgba(240,238,255,${labelAlphas[i]*.5})`;
+      ctx.fillText(name,CX,H-18);
+    });
+    ctx.font='9px DM Mono,monospace';
+    ctx.fillStyle='rgba(200,168,75,.12)';
+    ctx.fillText('DARK MATTER HALO BOUNDARY',CX,CY-218);
+    ctx.restore();
+
+    // Time display
+    const el=document.getElementById('gas-tlbl');
+    if(el) el.textContent=`T = ${(T*5).toFixed(2)} Gyr`;
+
+    requestAnimationFrame(render);
+  }
+  render();
+})();
+
+function toggleGas(){
+  window._gasToggle();
+  const ico=document.getElementById('g-ico'),lbl=document.getElementById('g-lbl');
+  const paused=lbl.textContent==='Pause';
+  lbl.textContent=paused?'Play':'Pause';
+  ico.innerHTML=paused?'<path d="M8 5v14l11-7z"/>':'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+}
+
+/* ════════════════════════════════════════════════════════
+   PDF DOWNLOAD — direct Google Drive link
+════════════════════════════════════════════════════════ */
+function downloadPDF(){
+  const a=document.createElement('a');
+  a.href='https://drive.google.com/uc?id=1q8DyTBc-gEiFJrsfk9sx0prJg2rNSy4_&export=download';
+  a.download='Scientist_Spotlight_Given_Messam-Harris.pdf';
+  a.target='_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+/* ════════════════════════════════════════════════════════
+   ELEVENLABS NARRATION — sentence-level highlighting
+   IMPORTANT: ElevenLabs requires requests from an HTTP
+   server, not file://. When using GitHub Pages or any
+   web server, this works correctly. For local testing,
+   open via Live Server (VS Code) or python -m http.server
+════════════════════════════════════════════════════════ */
+const ELEVEN_KEY='sk_7638fe40035da6b16d32c980821c7c0b31bc06cb941da8b8';
+const VOICE_ID='21m00Tcm4TlvDq8ikWAM'; // Rachel
+
+let narrOn=false,narrPlaying=false,narrParaIdx=-1;
+let currentAudio=null;
+const paraIds=['pp0','pp1','pp2','pp3','pp4'];
+
+function hashStr(s){
+  let h=0;for(let i=0;i<s.length;i++){h=(Math.imul(31,h)+s.charCodeAt(i))|0}
+  return Math.abs(h).toString(36);
+}
+function cacheGet(key){
+  try{const v=localStorage.getItem('elvn_'+key);return v?JSON.parse(v):null}catch(e){return null}
+}
+function cacheSet(key,val){
+  try{localStorage.setItem('elvn_'+key,JSON.stringify(val))}catch(e){}
+}
+
+// Split into sentences
+function splitSentences(text){
+  const sents=[];
+  const re=/[^.!?…]+[.!?…]+(?:\s|$)/g;
+  let m,last=0;
+  while((m=re.exec(text))!==null){
+    sents.push({text:m[0],start:m.index,end:m.index+m[0].length});
+    last=m.index+m[0].length;
+  }
+  const tail=text.slice(last).trim();
+  if(tail) sents.push({text:tail,start:last,end:text.length});
+  return sents.length?sents:[{text:text,start:0,end:text.length}];
+}
+
+// Wrap paragraph text into sentence spans
+function wrapSentences(el){
+  if(el.dataset.wrapped)return;
+  // Store raw text BEFORE modifying innerHTML
+  const raw=el.textContent.trim();
+  el.dataset.raw=raw;
+  el.dataset.wrapped='1';
+  const sents=splitSentences(raw);
+  el.innerHTML=sents.map((s,i)=>`<span class="sent" data-si="${i}">${s.text}</span>`).join('');
+}
+
+// Map alignment char indices → sentence time windows
+function getSentTimings(raw,align){
+  const sents=splitSentences(raw);
+  const starts=align.character_start_times_seconds||[];
+  const ends=align.character_end_times_seconds||[];
+  if(!starts.length) return [];
+  return sents.map(s=>{
+    const si=Math.min(s.start,starts.length-1);
+    const ei=Math.min(Math.max(s.end-1,0),ends.length-1);
+    return{startTime:starts[si]||0,endTime:ends[ei]||starts[starts.length-1]||1};
+  });
+}
+
+function clearSentHighlight(){
+  document.querySelectorAll('.sent.active').forEach(s=>s.classList.remove('active'));
+}
+
+// Show status message in narration bar
+function setNarrStatus(msg,isError){
+  const el=document.getElementById('n-stat');
+  el.textContent=msg;
+  el.style.color=isError?'#e05c4b':'rgba(240,238,255,.4)';
+}
+
+async function generateOrLoad(paraIdx){
+  const el=document.getElementById(paraIds[paraIdx]);
+  // Make sure raw text is captured
+  if(!el.dataset.raw) el.dataset.raw=el.textContent.trim();
+  const raw=el.dataset.raw;
+  const key=hashStr(raw);
+  let data=cacheGet(key);
+  if(data){
+    document.getElementById('n-gen').style.display='none';
+    return data;
+  }
+
+  document.getElementById('n-gen').style.display='';
+  setNarrStatus('Generating audio…',false);
+
+  // Check if we're on file:// (CORS will block ElevenLabs)
+  const isLocal=window.location.protocol==='file:';
+  if(isLocal){
+    document.getElementById('n-gen').style.display='none';
+    setNarrStatus('⚠ Needs HTTP server',true);
+    // Show helpful tooltip
+    showNarrError('ElevenLabs requires an HTTP server due to browser security (CORS). Open this file via Live Server in VS Code, or run: python -m http.server — then visit localhost:8000');
+    return null;
+  }
+
+  try{
+    const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/with-timestamps`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','xi-api-key':ELEVEN_KEY},
+      body:JSON.stringify({
+        text:raw,
+        model_id:'eleven_multilingual_v2',
+        voice_settings:{stability:.48,similarity_boost:.78,style:.05,use_speaker_boost:true}
+      })
+    });
+    if(!res.ok){
+      const errTxt=await res.text().catch(()=>'');
+      throw new Error(`HTTP ${res.status}: ${errTxt.slice(0,120)}`);
+    }
+    data=await res.json();
+    if(!data.audio_base64) throw new Error('No audio in response');
+    cacheSet(key,data);
+    document.getElementById('n-gen').style.display='none';
+    return data;
+  }catch(e){
+    console.error('[ElevenLabs]',e);
+    document.getElementById('n-gen').style.display='none';
+    setNarrStatus('API error — using browser voice',true);
+    // Fallback to Web Speech API
+    return{_fallback:true,_text:raw};
+  }
+}
+
+// Fallback: Web Speech API with sentence polling
+function speakWithBrowserVoice(el,raw,onDone){
+  wrapSentences(el);
+  const sentEls=el.querySelectorAll('.sent');
+  const sents=splitSentences(raw);
+  let si=0;
+
+  function speakSent(i){
+    if(i>=sents.length||!narrPlaying){clearSentHighlight();onDone();return;}
+    clearSentHighlight();
+    if(sentEls[i]) sentEls[i].classList.add('active');
+    const u=new SpeechSynthesisUtterance(sents[i].text.trim());
+    u.rate=0.9;u.pitch=1;
+    const voices=speechSynthesis.getVoices();
+    const pref=voices.find(v=>v.lang.startsWith('en')&&(v.name.includes('Samantha')||v.name.includes('Daniel')||v.name.includes('Google')));
+    if(pref) u.voice=pref;
+    u.onend=()=>{clearSentHighlight();si++;speakSent(si);};
+    u.onerror=()=>{si++;speakSent(si);};
+    speechSynthesis.speak(u);
+  }
+  speakSent(0);
+}
+
+function showNarrError(msg){
+  let box=document.getElementById('narr-err');
+  if(!box){
+    box=document.createElement('div');
+    box.id='narr-err';
+    box.style.cssText='margin-top:10px;padding:12px 16px;background:#2a1010;border:1px solid rgba(224,92,75,.4);border-radius:2px;font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;color:rgba(224,92,75,.8);line-height:1.6';
+    document.getElementById('nbar').insertAdjacentElement('afterend',box);
+  }
+  box.textContent=msg;
+  box.style.display='';
+  setTimeout(()=>{if(box)box.style.display='none';},12000);
+}
+
+async function speakPara(idx){
+  if(idx>=paraIds.length){stopNarr();setNarrStatus('Done ✓',false);return}
+  const el=document.getElementById(paraIds[idx]);
+
+  // Capture raw text before wrapping
+  if(!el.dataset.raw) el.dataset.raw=el.textContent.trim();
+  wrapSentences(el);
+
+  // Progress
+  document.getElementById('n-fill').style.width=((idx/paraIds.length)*100)+'%';
+  setNarrStatus(`¶ ${idx+1} / ${paraIds.length}`,false);
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+
+  const data=await generateOrLoad(idx);
+  if(!narrPlaying) return;
+
+  if(!data) return; // blocked (file:// with no fallback triggered)
+
+  // Fallback path
+  if(data._fallback){
+    speakWithBrowserVoice(el,data._text,()=>{
+      if(narrPlaying){narrParaIdx++;speakPara(narrParaIdx);}
+    });
+    return;
+  }
+
+  // ElevenLabs path
+  const audio=new Audio('data:audio/mpeg;base64,'+data.audio_base64);
+  currentAudio=audio;
+
+  const raw=el.dataset.raw;
+  const timings=(data.alignment)?getSentTimings(raw,data.alignment):[];
+  const sentEls=el.querySelectorAll('.sent');
+
+  audio.ontimeupdate=()=>{
+    const t=audio.currentTime;
+    if(timings.length){
+      clearSentHighlight();
+      for(let i=0;i<timings.length;i++){
+        if(t>=timings[i].startTime&&(i===timings.length-1||t<timings[i+1].startTime)){
+          if(sentEls[i]) sentEls[i].classList.add('active');
+          break;
+        }
+      }
+    }
+    const dur=audio.duration||1;
+    const base=(idx/paraIds.length)*100;
+    const chunk=(1/paraIds.length)*100;
+    document.getElementById('n-fill').style.width=(base+chunk*(t/dur))+'%';
+  };
+  audio.onended=()=>{clearSentHighlight();if(narrPlaying){narrParaIdx++;speakPara(narrParaIdx);}};
+  audio.onerror=(e)=>{
+    console.warn('[Audio error]',e);
+    if(narrPlaying){narrParaIdx++;speakPara(narrParaIdx);}
+  };
+  audio.play().catch(e=>{
+    console.warn('[Audio play blocked]',e);
+    setNarrStatus('Click play again',true);
+  });
+}
+
+function toggleNarr(){
+  narrOn=!narrOn;
+  document.getElementById('nbar').classList.toggle('on',narrOn);
+  document.getElementById('narr-btn').classList.toggle('on',narrOn);
+  if(!narrOn) stopNarr();
+}
+
+function narPlay(){
+  if(!narrPlaying){
+    if(!narrOn) toggleNarr();
+    narrPlaying=true;
+    document.getElementById('ico-play').style.display='none';
+    document.getElementById('ico-pause').style.display='';
+    if(narrParaIdx<0) narrParaIdx=0;
+    speakPara(narrParaIdx);
+  } else {
+    pauseNarr();
+  }
+}
+
+function pauseNarr(){
+  narrPlaying=false;
+  if(currentAudio) currentAudio.pause();
+  speechSynthesis.pause();
+  document.getElementById('ico-play').style.display='';
+  document.getElementById('ico-pause').style.display='none';
+  setNarrStatus('Paused',false);
+}
+
+function stopNarr(){
+  narrPlaying=false;
+  if(currentAudio){currentAudio.pause();currentAudio=null;}
+  speechSynthesis.cancel();
+  clearSentHighlight();
+  narrParaIdx=-1;
+  document.getElementById('ico-play').style.display='';
+  document.getElementById('ico-pause').style.display='none';
+  document.getElementById('n-fill').style.width='0%';
+  setNarrStatus('¶ — / 5',false);
+}
+</script>
+</body>
+</html>
