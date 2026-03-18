@@ -438,6 +438,7 @@ canvas.interactive{display:block;margin:0 auto;border-radius:2px;max-width:100%}
       <div class="n-prog"><div class="n-fill" id="n-fill"></div></div>
       <span class="n-gen" id="n-gen" style="display:none">Generating…</span>
       <span class="n-stat" id="n-stat">¶ — / 5</span>
+      <button class="n-btn" title="Test API key" onclick="testElevenKey()" style="width:auto;border-radius:2px;padding:0 8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;flex-shrink:0">TEST</button>
     </div>
 
     <!-- COVER -->
@@ -1013,7 +1014,7 @@ function downloadPDF(){
    web server, this works correctly. For local testing,
    open via Live Server (VS Code) or python -m http.server
 ════════════════════════════════════════════════════════ */
-const ELEVEN_KEY='sk_7638fe40035da6b16d32c980821c7c0b31bc06cb941da8b8';
+const ELEVEN_KEY='eb5413249d4281ad1682e0ed3045d900c55d02d05398369ef7d98f9ecb50156b';
 const VOICE_ID='21m00Tcm4TlvDq8ikWAM'; // Rachel
 
 let narrOn=false,narrPlaying=false,narrParaIdx=-1;
@@ -1082,10 +1083,11 @@ function setNarrStatus(msg,isError){
 
 async function generateOrLoad(paraIdx){
   const el=document.getElementById(paraIds[paraIdx]);
-  // Make sure raw text is captured
   if(!el.dataset.raw) el.dataset.raw=el.textContent.trim();
   const raw=el.dataset.raw;
   const key=hashStr(raw);
+
+  // Check cache first
   let data=cacheGet(key);
   if(data){
     document.getElementById('n-gen').style.display='none';
@@ -1093,15 +1095,13 @@ async function generateOrLoad(paraIdx){
   }
 
   document.getElementById('n-gen').style.display='';
-  setNarrStatus('Generating audio…',false);
+  setNarrStatus('Generating…',false);
 
-  // Check if we're on file:// (CORS will block ElevenLabs)
-  const isLocal=window.location.protocol==='file:';
-  if(isLocal){
+  // file:// CORS block
+  if(window.location.protocol==='file:'){
     document.getElementById('n-gen').style.display='none';
     setNarrStatus('⚠ Needs HTTP server',true);
-    // Show helpful tooltip
-    showNarrError('ElevenLabs requires an HTTP server due to browser security (CORS). Open this file via Live Server in VS Code, or run: python -m http.server — then visit localhost:8000');
+    showNarrError('ElevenLabs requires HTTPS. On GitHub Pages this works automatically. Locally, run: python -m http.server 8000 and visit http://localhost:8000');
     return null;
   }
 
@@ -1115,20 +1115,40 @@ async function generateOrLoad(paraIdx){
         voice_settings:{stability:.48,similarity_boost:.78,style:.05,use_speaker_boost:true}
       })
     });
+
+    // Parse error body regardless of status
+    const rawBody=await res.text();
     if(!res.ok){
-      const errTxt=await res.text().catch(()=>'');
-      throw new Error(`HTTP ${res.status}: ${errTxt.slice(0,120)}`);
+      // Try to extract ElevenLabs JSON error detail
+      let detail='';
+      try{
+        const j=JSON.parse(rawBody);
+        detail=j?.detail?.message||j?.detail||j?.message||JSON.stringify(j);
+      }catch(_){
+        detail=rawBody.slice(0,200);
+      }
+      throw new Error(`HTTP ${res.status} — ${detail}`);
     }
-    data=await res.json();
-    if(!data.audio_base64) throw new Error('No audio in response');
-    cacheSet(key,data);
+
+    // Parse success
+    let parsed;
+    try{ parsed=JSON.parse(rawBody); }
+    catch(_){ throw new Error('Response was not valid JSON'); }
+    if(!parsed.audio_base64) throw new Error('No audio_base64 in response. Keys: '+Object.keys(parsed).join(', '));
+
+    cacheSet(key,parsed);
     document.getElementById('n-gen').style.display='none';
-    return data;
+    setNarrStatus(`¶ ${paraIdx+1} / ${paraIds.length}`,false);
+    return parsed;
+
   }catch(e){
-    console.error('[ElevenLabs]',e);
     document.getElementById('n-gen').style.display='none';
-    setNarrStatus('API error — using browser voice',true);
-    // Fallback to Web Speech API
+    // Show the REAL error in the UI — not just a generic message
+    const msg=e.message||String(e);
+    setNarrStatus('ElevenLabs error',true);
+    showNarrError(`ElevenLabs error on ¶${paraIdx+1}: ${msg}\n\nFalling back to browser voice. Check your API key or quota at elevenlabs.io/app/subscription`);
+    console.error('[ElevenLabs]',msg);
+    // Fallback: browser voice
     return{_fallback:true,_text:raw};
   }
 }
@@ -1228,6 +1248,49 @@ async function speakPara(idx){
     console.warn('[Audio play blocked]',e);
     setNarrStatus('Click play again',true);
   });
+}
+
+// ── Quick key test — fires a minimal request and shows the raw result
+async function testElevenKey(){
+  setNarrStatus('Testing key…',false);
+  // Also clear cached audio so fresh requests go out
+  const errBox=document.getElementById('narr-err');
+  if(errBox) errBox.style.display='none';
+  try{
+    const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/with-timestamps`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','xi-api-key':ELEVEN_KEY},
+      body:JSON.stringify({
+        text:'Test.',
+        model_id:'eleven_multilingual_v2',
+        voice_settings:{stability:.5,similarity_boost:.75,style:0,use_speaker_boost:true}
+      })
+    });
+    const body=await res.text();
+    if(res.ok){
+      let parsed;
+      try{ parsed=JSON.parse(body); }catch(_){}
+      if(parsed?.audio_base64){
+        setNarrStatus('✓ Key works!',false);
+        showNarrError('✓ API key is valid and audio was returned. Press ▶ to start narration.');
+        // Play the test audio
+        const a=new Audio('data:audio/mpeg;base64,'+parsed.audio_base64);
+        a.play().catch(()=>{});
+      } else {
+        setNarrStatus('⚠ Odd response',true);
+        showNarrError('Key accepted but no audio_base64. Response keys: '+Object.keys(parsed||{}).join(', ')+'\nBody: '+body.slice(0,300));
+      }
+    } else {
+      let detail='';
+      try{ const j=JSON.parse(body); detail=j?.detail?.message||j?.detail||j?.message||JSON.stringify(j); }
+      catch(_){ detail=body.slice(0,300); }
+      setNarrStatus(`HTTP ${res.status}`,true);
+      showNarrError(`HTTP ${res.status}: ${detail}\n\nCommon causes:\n• 401 = invalid or expired key\n• 403 = key restricted by hostname — go to elevenlabs.io → API Keys → remove hostname restrictions\n• 422 = bad request params\n• 429 = quota exceeded`);
+    }
+  }catch(e){
+    setNarrStatus('Network error',true);
+    showNarrError(`Network error: ${e.message}\nThis usually means a CORS block or no internet. Are you on GitHub Pages (https://)?`);
+  }
 }
 
 function toggleNarr(){
