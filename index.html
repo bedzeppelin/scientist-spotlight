@@ -73,21 +73,44 @@ body{background:var(--void);color:#f0eeff;font-family:'Cormorant Garamond',serif
 .stat-n{font-family:'Cinzel',serif;font-size:52px;color:var(--gold);line-height:1}
 .stat-l{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(240,238,255,.35);text-transform:uppercase;margin-top:4px}
 
-/* ── FOLDERS ── */
-.folders-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:6px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:28px}
-#folders{display:flex;align-items:flex-end;gap:5px;height:380px}
-.fld{flex:1;display:flex;flex-direction:column;cursor:pointer;position:relative;transition:flex .4s cubic-bezier(.22,1,.36,1);min-width:0}
-.fld.open{flex:2.4}
-.fld-tab{background:var(--folder-dark);padding:8px 14px;border-radius:5px 5px 0 0;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(0,0,0,.45);white-space:nowrap;transition:background .3s;z-index:2}
-.fld.open .fld-tab{background:var(--folder);color:rgba(0,0,0,.75)}
-.fld-body{background:var(--folder);border-radius:0 4px 4px 4px;width:100%;height:28px;overflow:hidden;transition:height .45s cubic-bezier(.22,1,.36,1)}
-.fld.open .fld-body{height:340px}
-.fld-inner{margin:10px 10px 18px;background:var(--folder-paper);border-radius:2px;padding:24px 22px 28px;height:calc(100% - 28px);opacity:0;transition:opacity .3s .15s;overflow:hidden}
-.fld.open .fld-inner{opacity:1}
-.fld-year{font-family:'Cinzel',serif;font-size:22px;color:var(--folder-dark);margin-bottom:8px;font-weight:600}
-.fld-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:12px;line-height:1.3}
-.fld-desc{font-family:'Cormorant Garamond',serif;font-size:13.5px;color:var(--ink-mid);line-height:1.75;font-weight:300}
-.fld-lines{position:absolute;bottom:0;left:0;right:0;height:60px;pointer-events:none;background:repeating-linear-gradient(transparent,transparent 17px,rgba(140,110,50,.18) 17px,rgba(140,110,50,.18) 18px)}
+/* ── ORBITAL SYSTEM ── */
+.orbital-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:6px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:20px}
+#orbital-wrap{position:relative;width:100%;height:520px}
+#orbital-canvas{display:block;width:100%;height:100%;cursor:none}
+
+/* Planet tooltip card */
+#planet-card{
+  position:absolute;
+  pointer-events:none;
+  z-index:20;
+  opacity:0;
+  transition:opacity .25s ease,transform .25s ease;
+  transform:translateY(8px);
+  max-width:280px;
+  min-width:220px;
+}
+#planet-card.visible{opacity:1;transform:translateY(0)}
+.pc-year{font-family:'Cinzel',serif;font-size:20px;color:var(--gold);line-height:1;margin-bottom:6px;font-weight:600}
+.pc-title{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:#f0eeff;margin-bottom:10px;line-height:1.35}
+.pc-desc{font-family:'Cormorant Garamond',serif;font-size:13px;color:rgba(240,238,255,.58);line-height:1.7;font-weight:300}
+.pc-inner{
+  background:rgba(8,5,26,.92);
+  border:1px solid rgba(200,168,75,.3);
+  border-radius:3px;
+  padding:18px 20px 20px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 0 1px rgba(200,168,75,.08);
+}
+.pc-inner::before{
+  content:'';position:absolute;
+  left:50%;bottom:-7px;
+  transform:translateX(-50%);
+  width:12px;height:12px;
+  background:rgba(8,5,26,.92);
+  border-right:1px solid rgba(200,168,75,.3);
+  border-bottom:1px solid rgba(200,168,75,.3);
+  transform:translateX(-50%) rotate(45deg);
+}
 
 /* ── RESEARCH ── */
 .rsh-h{margin-bottom:70px}
@@ -244,71 +267,18 @@ canvas.interactive{display:block;margin:0 auto;border-radius:2px;max-width:100%}
     </div>
   </div>
 
-  <!-- FILE FOLDERS -->
+  <!-- ORBITAL SYSTEM -->
   <div class="fi" style="transition-delay:.2s">
-    <div class="folders-lbl">Career Milestones - Click a folder to open</div>
-    <div id="folders">
-
-      <div class="fld open">
-        <div class="fld-tab">2014</div>
-        <div class="fld-body">
-          <div class="fld-inner">
-            <div class="fld-year">2014</div>
-            <div class="fld-title">World Double Dutch Champion</div>
-            <div class="fld-desc">After elbow injuries ended a promising baseball career at fifteen, Fujimoto channelled his athletic drive into competitive Double Dutch jump rope, ultimately winning at the world championship level.</div>
-          </div>
-          <div class="fld-lines"></div>
+    <div class="orbital-lbl">Career Milestones -- Hover a planet to explore</div>
+    <div id="orbital-wrap">
+      <canvas id="orbital-canvas"></canvas>
+      <div id="planet-card">
+        <div class="pc-inner">
+          <div class="pc-year" id="pc-year"></div>
+          <div class="pc-title" id="pc-title"></div>
+          <div class="pc-desc" id="pc-desc"></div>
         </div>
       </div>
-
-      <div class="fld">
-        <div class="fld-tab">2019</div>
-        <div class="fld-body">
-          <div class="fld-inner">
-            <div class="fld-year">2015–2019</div>
-            <div class="fld-title">B.Sc. · M.Sc. · Ph.D. - University of Tokyo</div>
-            <div class="fld-desc">Completed all three degrees in Astronomy at the University of Tokyo. His doctoral research focused on high-redshift galaxies and submillimeter observational techniques using ALMA, establishing his expertise in the early universe and dusty star-forming systems.</div>
-          </div>
-          <div class="fld-lines"></div>
-        </div>
-      </div>
-
-      <div class="fld">
-        <div class="fld-tab">2019–22</div>
-        <div class="fld-body">
-          <div class="fld-inner">
-            <div class="fld-year">2019–2022</div>
-            <div class="fld-title">DAWN Fellow - University of Copenhagen</div>
-            <div class="fld-desc">Joined the Cosmic Dawn Center -- one of Europe's premier hubs for the first billion years of cosmic history -- deepening his work on galaxy formation, AGN environments and the circumgalactic medium at high redshift.</div>
-          </div>
-          <div class="fld-lines"></div>
-        </div>
-      </div>
-
-      <div class="fld">
-        <div class="fld-tab">2022–24</div>
-        <div class="fld-body">
-          <div class="fld-inner">
-            <div class="fld-year">2022–2024</div>
-            <div class="fld-title">NASA Hubble Fellow - UT Austin</div>
-            <div class="fld-desc">Received one of NASA's most prestigious postdoctoral fellowships, pursuing independent research on high-redshift galaxies, AGN and gravitational lensing with JWST and ALMA. Published first-authored papers in Nature and Nature Astronomy.</div>
-          </div>
-          <div class="fld-lines"></div>
-        </div>
-      </div>
-
-      <div class="fld">
-        <div class="fld-tab">2025 →</div>
-        <div class="fld-body">
-          <div class="fld-inner">
-            <div class="fld-year">2025 →</div>
-            <div class="fld-title">Assistant Professor - University of Toronto</div>
-            <div class="fld-desc">Joined U of T's Department of Astronomy & Astrophysics with over $1.6 million USD in JWST grants as Principal Investigator. Continues building a research program at the intersection of gravitational lensing, galaxy formation and the circumgalactic medium.</div>
-          </div>
-          <div class="fld-lines"></div>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
@@ -438,7 +408,6 @@ canvas.interactive{display:block;margin:0 auto;border-radius:2px;max-width:100%}
       <div class="n-prog"><div class="n-fill" id="n-fill"></div></div>
       <span class="n-gen" id="n-gen" style="display:none">Generating…</span>
       <span class="n-stat" id="n-stat">¶ — / 5</span>
-      <button class="n-btn" title="Test API key" onclick="testElevenKey()" style="width:auto;border-radius:2px;padding:0 8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;flex-shrink:0">TEST</button>
     </div>
 
     <!-- COVER -->
@@ -451,7 +420,7 @@ canvas.interactive{display:block;margin:0 auto;border-radius:2px;max-width:100%}
     <!-- BIOGRAPHICAL INFORMATION -->
     <h2 class="p-sec">Biographical Information</h2>
 
-    <p class="p-par" id="pp0">Seiji Fujimoto is an assistant professor of astronomy at the University of Toronto whose research focuses on how the first galaxies and black holes formed in the early universe (Fujimoto, 2025). He grew up near Kyoto, Japan, and was a competitive athlete before turning to science – playing baseball until elbow injuries ended his career at fifteen, after which he redirected that drive into Double Dutch and became a world champion in 2014 (Fujimoto, 2025). He earned his Bachelor's, Master's and PhD in Astronomy from the University of Tokyo in 2019, then held postdoctoral positions as a DAWN Fellow in Copenhagen and a NASA Hubble Fellow in Austin before joining the University of Toronto as faculty in 2025 (Fujimoto, 2025).</p>
+    <p class="p-par" id="pp0">Seiji Fujimoto is an assistant professor of astronomy at the University of Toronto whose research focuses on how the first galaxies and black holes formed in the early universe. (Fujimoto, 2025) He grew up near Kyoto, Japan, and was a competitive athlete before turning to science – playing baseball until elbow injuries ended his career at fifteen, after which he redirected that drive into Double Dutch and became a world champion in 2014 (Fujimoto, 2025). He earned his Bachelor's, Master's, and PhD in Astronomy from the University of Tokyo in 2019, then held postdoctoral positions as a DAWN Fellow in Copenhagen and a NASA Hubble Fellow in Austin before joining the University of Toronto as faculty in 2025 (Fujimoto, 2025).</p>
 
     <p class="p-par" id="pp1">What makes Fujimoto exceptional as a researcher is the remarkable volume and range of his output. As of 2025 he has published 18 first-authored papers – articles in which he personally led the scientific work – in peer-reviewed journals including Nature and Nature Astronomy, covering topics from the sizes of dusty star-forming galaxies (Fujimoto et al., 2018) to whether a record-breaking black hole might be an optical illusion of gravity (Fujimoto et al., 2020). That kind of sustained, first-authored productivity at an early career stage is rare and it reflects exactly the qualities his biography suggests: discipline, adaptability and the willingness to pursue difficult questions relentlessly.</p>
 
@@ -610,15 +579,403 @@ document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
 const scObs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis')}),{threshold:.1});
 document.querySelectorAll('.fi').forEach(el=>scObs.observe(el));
 
+
 /* ════════════════════════════════════════════════════════
-   FILE FOLDERS
+   ORBITAL PLANET SYSTEM
 ════════════════════════════════════════════════════════ */
-document.querySelectorAll('.fld').forEach(f=>{
-  f.addEventListener('click',()=>{
-    document.querySelectorAll('.fld').forEach(x=>x.classList.remove('open'));
-    f.classList.add('open');
+(function(){
+  const wrap = document.getElementById('orbital-wrap');
+  const canvas = document.getElementById('orbital-canvas');
+  const ctx = canvas.getContext('2d');
+  const card = document.getElementById('planet-card');
+
+  // Milestone data
+  const milestones = [
+    {
+      year: '2014',
+      title: 'World Double Dutch Champion',
+      desc: 'After elbow injuries ended a promising baseball career at fifteen, Fujimoto channelled his athletic drive into competitive Double Dutch jump rope, ultimately winning at the world championship level.',
+      // Visual style: warm gold — athletic fire
+      color: '#f5c842', glow: 'rgba(245,200,66,.5)',
+      rings: 0, type: 'rocky',
+      size: 22, orbitR: 115, orbitSpeed: 0.00038, orbitOffset: 0.0
+    },
+    {
+      year: '2015–2019',
+      title: 'B.Sc. · M.Sc. · Ph.D. — University of Tokyo',
+      desc: 'Completed all three degrees in Astronomy at the University of Tokyo. His doctoral research focused on high-redshift galaxies and submillimeter observational techniques using ALMA, establishing his expertise in the early universe and dusty star-forming systems.',
+      // Deep blue — the depth of study
+      color: '#4a9eff', glow: 'rgba(74,158,255,.5)',
+      rings: 1, type: 'gas',
+      size: 30, orbitR: 175, orbitSpeed: 0.00025, orbitOffset: 1.3
+    },
+    {
+      year: '2019–2022',
+      title: 'DAWN Fellow — University of Copenhagen',
+      desc: 'Joined the Cosmic Dawn Center, one of Europe\'s premier hubs for the first billion years of cosmic history, deepening his work on galaxy formation, AGN environments and the circumgalactic medium at high redshift.',
+      // Teal — the dawn, new light
+      color: '#4dd9c8', glow: 'rgba(77,217,200,.5)',
+      rings: 2, type: 'gas',
+      size: 28, orbitR: 235, orbitSpeed: 0.00018, orbitOffset: 2.8
+    },
+    {
+      year: '2022–2024',
+      title: 'NASA Hubble Fellow — UT Austin',
+      desc: 'Received one of NASA\'s most prestigious postdoctoral fellowships, pursuing independent research on high-redshift galaxies, AGN and gravitational lensing with JWST and ALMA. Published first-authored papers in Nature and Nature Astronomy.',
+      // Red-orange — NASA energy
+      color: '#ff6b35', glow: 'rgba(255,107,53,.5)',
+      rings: 0, type: 'rocky',
+      size: 20, orbitR: 295, orbitSpeed: 0.00013, orbitOffset: 4.5
+    },
+    {
+      year: '2025 →',
+      title: 'Assistant Professor — University of Toronto',
+      desc: 'Joined U of T\'s Department of Astronomy & Astrophysics with over $1.6 million USD in JWST grants as Principal Investigator. Continues building a research program at the intersection of gravitational lensing, galaxy formation and the circumgalactic medium.',
+      // Purple galaxy — the ongoing mission
+      color: '#c084fc', glow: 'rgba(192,132,252,.5)',
+      rings: 3, type: 'galaxy',
+      size: 34, orbitR: 355, orbitSpeed: 0.00008, orbitOffset: 0.9
+    }
+  ];
+
+  let W, H, CX, CY;
+  let mouseX = -999, mouseY = -999;
+  let hoveredIdx = -1;
+  let t = 0;
+
+  // Intro spin: starts fast, decelerates to 0 over ~3 seconds
+  const SPIN_DURATION = 180; // frames ~3s at 60fps
+  let spinFrame = 0;
+  // Each planet gets a fixed resting angle derived from orbitOffset
+  // orbitSpeed is only used during the intro spin, then frozen
+
+  function resize() {
+    const rect = wrap.getBoundingClientRect();
+    W = canvas.width = rect.width;
+    H = canvas.height = 520;
+    CX = W / 2; CY = H / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Track mouse relative to canvas
+  canvas.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    mouseX = (e.clientX - r.left) * (W / r.width);
+    mouseY = (e.clientY - r.top) * (H / r.height);
   });
-});
+  canvas.addEventListener('mouseleave', () => { mouseX = -999; mouseY = -999; });
+
+  // Planet positions (computed each frame)
+  const positions = milestones.map(() => ({x:0, y:0, dx:0, dy:0}));
+
+  function getPlanetPos(m, spinAngle) {
+    // spinAngle is added on top of orbitOffset during intro, then frozen at 0
+    const angle = m.orbitOffset + spinAngle * m.orbitSpeed * 8000;
+    return {
+      x: CX + Math.cos(angle) * m.orbitR,
+      y: CY + Math.sin(angle) * m.orbitR * 0.38
+    };
+  }
+
+  function drawOrbitRing(m, alpha) {
+    ctx.save();
+    ctx.translate(CX, CY);
+    ctx.scale(1, 0.38);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, m.orbitR, m.orbitR, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(200,168,75,${alpha})`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 8]);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawRockyPlanet(x, y, m, hovered) {
+    const r = m.size + (hovered ? 4 : 0);
+    // Glow
+    const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 2.8);
+    grd.addColorStop(0, m.glow);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(x, y, r * 2.8, 0, Math.PI * 2); ctx.fill();
+    // Surface gradient
+    const sg = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+    sg.addColorStop(0, lighten(m.color, 0.4));
+    sg.addColorStop(0.6, m.color);
+    sg.addColorStop(1, darken(m.color, 0.5));
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = sg; ctx.fill();
+    // Specular highlight
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x - r * 0.28, y - r * 0.28, r * 0.32, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.fill();
+    ctx.restore();
+  }
+
+  function drawGasPlanet(x, y, m, hovered) {
+    const r = m.size + (hovered ? 4 : 0);
+    // Outer glow
+    const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+    grd.addColorStop(0, m.glow);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(x, y, r * 3, 0, Math.PI * 2); ctx.fill();
+    // Bands
+    for (let i = 0; i < 5; i++) {
+      const bandY = y - r + (i / 4) * r * 2;
+      const bw = Math.sqrt(Math.max(0, r * r - Math.pow(bandY - y, 2)));
+      const alpha = [0.7, 0.5, 0.8, 0.45, 0.65][i];
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(x, bandY, bw, r * 0.16, 0, 0, Math.PI * 2);
+      ctx.fillStyle = i % 2 === 0 ? m.color + 'cc' : darken(m.color, 0.25) + 'aa';
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+      ctx.restore();
+    }
+    // Clip to sphere
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.clip();
+    const sg = ctx.createRadialGradient(x - r * 0.25, y - r * 0.25, 0, x, y, r);
+    sg.addColorStop(0, 'rgba(255,255,255,0.18)');
+    sg.addColorStop(1, 'rgba(0,0,0,0.35)');
+    ctx.fillStyle = sg; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    ctx.restore();
+    // Rings
+    if (m.rings > 0) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(1, 0.28);
+      for (let ri = 0; ri < m.rings; ri++) {
+        const rIn = r * (1.45 + ri * 0.28);
+        const rOut = r * (1.75 + ri * 0.28);
+        const rg = ctx.createRadialGradient(0, 0, rIn, 0, 0, rOut);
+        rg.addColorStop(0, m.color + '55');
+        rg.addColorStop(0.5, m.color + '33');
+        rg.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.arc(0, 0, rOut, 0, Math.PI * 2);
+        ctx.arc(0, 0, rIn, 0, Math.PI * 2, true);
+        ctx.fillStyle = rg; ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawGalaxy(x, y, m, hovered, time) {
+    const r = m.size + (hovered ? 5 : 0);
+    // Outer nebula glow
+    const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 3.5);
+    grd.addColorStop(0, m.glow);
+    grd.addColorStop(0.5, 'rgba(100,50,180,0.2)');
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(x, y, r * 3.5, 0, Math.PI * 2); ctx.fill();
+    // Spiral arms
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(time * 0.0002);
+    for (let arm = 0; arm < 2; arm++) {
+      ctx.save();
+      ctx.rotate(arm * Math.PI);
+      for (let s = 0; s < 28; s++) {
+        const frac = s / 28;
+        const a = frac * Math.PI * 1.6;
+        const sr = frac * r * 1.1;
+        const sx = Math.cos(a) * sr, sy = Math.sin(a) * sr * 0.5;
+        const sz = 1.5 + frac * 3;
+        const alpha = (1 - frac) * 0.6;
+        ctx.beginPath();
+        ctx.arc(sx, sy, sz, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(192,132,252,${alpha})`;
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    // Core
+    const cg = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 0.55);
+    cg.addColorStop(0, '#fff8f0');
+    cg.addColorStop(0.4, m.color);
+    cg.addColorStop(1, 'transparent');
+    ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(0, 0, r * 0.55, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawYearLabel(x, y, m, hovered) {
+    ctx.save();
+    ctx.font = `${hovered ? 600 : 400} 10px 'DM Mono', monospace`;
+    ctx.fillStyle = hovered ? m.color : 'rgba(200,168,75,0.55)';
+    ctx.textAlign = 'center';
+    ctx.shadowBlur = hovered ? 10 : 0;
+    ctx.shadowColor = m.color;
+    ctx.fillText(m.year, x, y + m.size + (hovered ? 4 : 0) + 18);
+    ctx.restore();
+  }
+
+  // Color helpers
+  function lighten(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.min(255, (n >> 16) + amt * 255);
+    const g = Math.min(255, ((n >> 8) & 0xff) + amt * 255);
+    const b = Math.min(255, (n & 0xff) + amt * 255);
+    return `rgb(${r|0},${g|0},${b|0})`;
+  }
+  function darken(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.max(0, (n >> 16) - amt * 255);
+    const g = Math.max(0, ((n >> 8) & 0xff) - amt * 255);
+    const b = Math.max(0, (n & 0xff) - amt * 255);
+    return `rgb(${r|0},${g|0},${b|0})`;
+  }
+
+  // Central star (Fujimoto)
+  function drawStar(time) {
+    const pulse = 1 + 0.06 * Math.sin(time * 0.002);
+    const r = 18 * pulse;
+    // Corona
+    for (let i = 3; i > 0; i--) {
+      const cg = ctx.createRadialGradient(CX, CY, 0, CX, CY, r * i * 1.4);
+      cg.addColorStop(0, `rgba(255,230,100,${0.15 / i})`);
+      cg.addColorStop(1, 'transparent');
+      ctx.fillStyle = cg;
+      ctx.beginPath(); ctx.arc(CX, CY, r * i * 1.4, 0, Math.PI * 2); ctx.fill();
+    }
+    // Body
+    const sg = ctx.createRadialGradient(CX - r * 0.3, CY - r * 0.3, 0, CX, CY, r);
+    sg.addColorStop(0, '#fff8e0');
+    sg.addColorStop(0.4, '#ffd060');
+    sg.addColorStop(1, '#c87020');
+    ctx.save();
+    ctx.shadowBlur = 30; ctx.shadowColor = '#ffd060';
+    ctx.fillStyle = sg;
+    ctx.beginPath(); ctx.arc(CX, CY, r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    // Label
+    ctx.save();
+    ctx.font = "600 9px 'DM Mono', monospace";
+    ctx.fillStyle = 'rgba(255,220,100,0.6)';
+    ctx.textAlign = 'center';
+    ctx.fillText('FUJIMOTO', CX, CY + r + 16);
+    ctx.restore();
+  }
+
+  // Update tooltip card position and content
+  function updateCard(idx, px, py) {
+    if (idx === -1) {
+      card.classList.remove('visible');
+      return;
+    }
+    const m = milestones[idx];
+    document.getElementById('pc-year').textContent = m.year;
+    document.getElementById('pc-title').textContent = m.title;
+    document.getElementById('pc-desc').textContent = m.desc;
+
+    const rect = wrap.getBoundingClientRect();
+    const scaleX = rect.width / W;
+    const scaleY = rect.height / H;
+
+    const cardW = 280;
+    let cx = px * scaleX - cardW / 2;
+    const cy = py * scaleY - 8;
+
+    // Keep within bounds
+    cx = Math.max(4, Math.min(rect.width - cardW - 4, cx));
+
+    card.style.left = cx + 'px';
+    card.style.top = cy + 'px';
+    card.style.transform = 'translateY(-100%)';
+    card.classList.add('visible');
+  }
+
+  function draw() {
+    t++;
+    ctx.clearRect(0, 0, W, H);
+
+    // Intro spin: ease-out over SPIN_DURATION frames, then freeze
+    let spinAngle = 0;
+    if (spinFrame < SPIN_DURATION) {
+      spinFrame++;
+      // Ease-out: progress goes 0→1 but decelerates
+      const prog = spinFrame / SPIN_DURATION;
+      const eased = 1 - Math.pow(1 - prog, 3); // cubic ease-out
+      spinAngle = eased * 1.0; // max 1 radian of travel across spin
+    } else {
+      spinAngle = 1.0; // frozen at final position
+    }
+
+    // Subtle radial bg
+    const bg = ctx.createRadialGradient(CX, CY, 0, CX, CY, Math.max(W, H) * 0.7);
+    bg.addColorStop(0, 'rgba(12,8,30,0.6)');
+    bg.addColorStop(1, 'transparent');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+    // Orbit rings
+    milestones.forEach((m, i) => {
+      drawOrbitRing(m, hoveredIdx === i ? 0.2 : 0.07);
+    });
+
+    // Central star
+    drawStar(t);
+
+    // Compute planet positions — fixed after intro, only cursor-pull moves them
+    let newHovered = -1;
+    milestones.forEach((m, i) => {
+      const base = getPlanetPos(m, spinAngle);
+      // Mouse pull: planets gently drift toward cursor when nearby
+      const dist = Math.hypot(mouseX - base.x, mouseY - base.y);
+      const pullRange = 180;
+      let px = base.x, py = base.y;
+      if (dist < pullRange && dist > 0) {
+        const strength = (1 - dist / pullRange) * 22;
+        px += (mouseX - base.x) / dist * strength;
+        py += (mouseY - base.y) / dist * strength;
+      }
+      positions[i] = { x: px, y: py };
+
+      // Hit test
+      const hitR = m.size + 12;
+      if (Math.hypot(mouseX - px, mouseY - py) < hitR) newHovered = i;
+    });
+
+    // Sort by Y so "closer" (lower) planets draw on top
+    const order = milestones.map((_, i) => i).sort((a, b) => positions[a].y - positions[b].y);
+
+    // Draw planets in depth order
+    order.forEach(i => {
+      const m = milestones[i];
+      const { x, y } = positions[i];
+      const hov = hoveredIdx === i;
+
+      if (m.type === 'galaxy') drawGalaxy(x, y, m, hov, t);
+      else if (m.type === 'gas') drawGasPlanet(x, y, m, hov);
+      else drawRockyPlanet(x, y, m, hov);
+
+      drawYearLabel(x, y, m, hov);
+    });
+
+    // Update hover state
+    if (newHovered !== hoveredIdx) {
+      hoveredIdx = newHovered;
+      canvas.style.cursor = hoveredIdx >= 0 ? 'none' : 'none';
+    }
+
+    // Update card
+    if (hoveredIdx >= 0) {
+      const { x, y } = positions[hoveredIdx];
+      updateCard(hoveredIdx, x, y - milestones[hoveredIdx].size - 10);
+    } else {
+      updateCard(-1);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+
 
 /* ════════════════════════════════════════════════════════
    GRAVITATIONAL LENSING DEMO
@@ -999,7 +1356,7 @@ function toggleGas(){
 ════════════════════════════════════════════════════════ */
 function downloadPDF(){
   const a=document.createElement('a');
-  a.href='https://docs.google.com/document/d/1QpjuI8qbFq5Y_OSjGRUvi8rJyopd8YZzubus9Zrr4DI/export?format=pdf';
+  a.href='https://drive.google.com/uc?id=1q8DyTBc-gEiFJrsfk9sx0prJg2rNSy4_&export=download';
   a.download='Scientist_Spotlight_Given_Messam-Harris.pdf';
   a.target='_blank';
   document.body.appendChild(a);
@@ -1014,8 +1371,8 @@ function downloadPDF(){
    web server, this works correctly. For local testing,
    open via Live Server (VS Code) or python -m http.server
 ════════════════════════════════════════════════════════ */
-const ELEVEN_KEY='eb5413249d4281ad1682e0ed3045d900c55d02d05398369ef7d98f9ecb50156b';
-const VOICE_ID='3TStB8f3X3To0Uj5R7RK'; // Joseff Novak
+const ELEVEN_KEY='sk_7638fe40035da6b16d32c980821c7c0b31bc06cb941da8b8';
+const VOICE_ID='21m00Tcm4TlvDq8ikWAM'; // Rachel
 
 let narrOn=false,narrPlaying=false,narrParaIdx=-1;
 let currentAudio=null;
@@ -1083,11 +1440,10 @@ function setNarrStatus(msg,isError){
 
 async function generateOrLoad(paraIdx){
   const el=document.getElementById(paraIds[paraIdx]);
+  // Make sure raw text is captured
   if(!el.dataset.raw) el.dataset.raw=el.textContent.trim();
   const raw=el.dataset.raw;
   const key=hashStr(raw);
-
-  // Check cache first
   let data=cacheGet(key);
   if(data){
     document.getElementById('n-gen').style.display='none';
@@ -1095,13 +1451,15 @@ async function generateOrLoad(paraIdx){
   }
 
   document.getElementById('n-gen').style.display='';
-  setNarrStatus('Generating…',false);
+  setNarrStatus('Generating audio…',false);
 
-  // file:// CORS block
-  if(window.location.protocol==='file:'){
+  // Check if we're on file:// (CORS will block ElevenLabs)
+  const isLocal=window.location.protocol==='file:';
+  if(isLocal){
     document.getElementById('n-gen').style.display='none';
     setNarrStatus('⚠ Needs HTTP server',true);
-    showNarrError('ElevenLabs requires HTTPS. On GitHub Pages this works automatically. Locally, run: python -m http.server 8000 and visit http://localhost:8000');
+    // Show helpful tooltip
+    showNarrError('ElevenLabs requires an HTTP server due to browser security (CORS). Open this file via Live Server in VS Code, or run: python -m http.server — then visit localhost:8000');
     return null;
   }
 
@@ -1115,40 +1473,20 @@ async function generateOrLoad(paraIdx){
         voice_settings:{stability:.48,similarity_boost:.78,style:.05,use_speaker_boost:true}
       })
     });
-
-    // Parse error body regardless of status
-    const rawBody=await res.text();
     if(!res.ok){
-      // Try to extract ElevenLabs JSON error detail
-      let detail='';
-      try{
-        const j=JSON.parse(rawBody);
-        detail=j?.detail?.message||j?.detail||j?.message||JSON.stringify(j);
-      }catch(_){
-        detail=rawBody.slice(0,200);
-      }
-      throw new Error(`HTTP ${res.status} — ${detail}`);
+      const errTxt=await res.text().catch(()=>'');
+      throw new Error(`HTTP ${res.status}: ${errTxt.slice(0,120)}`);
     }
-
-    // Parse success
-    let parsed;
-    try{ parsed=JSON.parse(rawBody); }
-    catch(_){ throw new Error('Response was not valid JSON'); }
-    if(!parsed.audio_base64) throw new Error('No audio_base64 in response. Keys: '+Object.keys(parsed).join(', '));
-
-    cacheSet(key,parsed);
+    data=await res.json();
+    if(!data.audio_base64) throw new Error('No audio in response');
+    cacheSet(key,data);
     document.getElementById('n-gen').style.display='none';
-    setNarrStatus(`¶ ${paraIdx+1} / ${paraIds.length}`,false);
-    return parsed;
-
+    return data;
   }catch(e){
+    console.error('[ElevenLabs]',e);
     document.getElementById('n-gen').style.display='none';
-    // Show the REAL error in the UI — not just a generic message
-    const msg=e.message||String(e);
-    setNarrStatus('ElevenLabs error',true);
-    showNarrError(`ElevenLabs error on ¶${paraIdx+1}: ${msg}\n\nFalling back to browser voice. Check your API key or quota at elevenlabs.io/app/subscription`);
-    console.error('[ElevenLabs]',msg);
-    // Fallback: browser voice
+    setNarrStatus('API error — using browser voice',true);
+    // Fallback to Web Speech API
     return{_fallback:true,_text:raw};
   }
 }
@@ -1248,49 +1586,6 @@ async function speakPara(idx){
     console.warn('[Audio play blocked]',e);
     setNarrStatus('Click play again',true);
   });
-}
-
-// ── Quick key test — fires a minimal request and shows the raw result
-async function testElevenKey(){
-  setNarrStatus('Testing key…',false);
-  // Also clear cached audio so fresh requests go out
-  const errBox=document.getElementById('narr-err');
-  if(errBox) errBox.style.display='none';
-  try{
-    const res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/with-timestamps`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','xi-api-key':ELEVEN_KEY},
-      body:JSON.stringify({
-        text:'Test.',
-        model_id:'eleven_multilingual_v2',
-        voice_settings:{stability:.5,similarity_boost:.75,style:0,use_speaker_boost:true}
-      })
-    });
-    const body=await res.text();
-    if(res.ok){
-      let parsed;
-      try{ parsed=JSON.parse(body); }catch(_){}
-      if(parsed?.audio_base64){
-        setNarrStatus('✓ Key works!',false);
-        showNarrError('✓ API key is valid and audio was returned. Press ▶ to start narration.');
-        // Play the test audio
-        const a=new Audio('data:audio/mpeg;base64,'+parsed.audio_base64);
-        a.play().catch(()=>{});
-      } else {
-        setNarrStatus('⚠ Odd response',true);
-        showNarrError('Key accepted but no audio_base64. Response keys: '+Object.keys(parsed||{}).join(', ')+'\nBody: '+body.slice(0,300));
-      }
-    } else {
-      let detail='';
-      try{ const j=JSON.parse(body); detail=j?.detail?.message||j?.detail||j?.message||JSON.stringify(j); }
-      catch(_){ detail=body.slice(0,300); }
-      setNarrStatus(`HTTP ${res.status}`,true);
-      showNarrError(`HTTP ${res.status}: ${detail}\n\nCommon causes:\n• 401 = invalid or expired key\n• 403 = key restricted by hostname — go to elevenlabs.io → API Keys → remove hostname restrictions\n• 422 = bad request params\n• 429 = quota exceeded`);
-    }
-  }catch(e){
-    setNarrStatus('Network error',true);
-    showNarrError(`Network error: ${e.message}\nThis usually means a CORS block or no internet. Are you on GitHub Pages (https://)?`);
-  }
 }
 
 function toggleNarr(){
