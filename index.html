@@ -339,6 +339,17 @@ canvas.interactive{display:block;margin:0 auto;border-radius:2px;max-width:100%}
           <svg id="g-ico" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
           <span id="g-lbl">Pause</span>
         </button>
+        <button class="pbtn" onclick="restartGas()" style="background:rgba(255,255,255,.05);border-color:rgba(200,168,75,.25);color:rgba(240,238,255,.65)" title="Restart from T=0">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+          <span>Restart</span>
+        </button>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(240,238,255,.3)">SPEED</span>
+          <input type="range" id="gas-speed" min="0.1" max="3" step="0.1" value="1"
+            oninput="setGasSpeed(this.value)"
+            style="width:80px;accent-color:var(--gold);cursor:pointer;opacity:0.7">
+          <span id="gas-speed-lbl" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(200,168,75,.5);min-width:24px">1×</span>
+        </div>
         <span id="gas-tlbl" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(240,238,255,.3)">T = 0 Gyr</span>
       </div>
       <div class="gas-legend">
@@ -1068,9 +1079,11 @@ document.querySelectorAll('.fi').forEach(el=>scObs.observe(el));
     lbl(drag?'DRAGGING…':'FOREGROUND GALAXY',lens.x,lens.y+24,'rgba(200,168,75,.6)',9);
     if(!drag) lbl('(drag me)',lens.x,lens.y+34,'rgba(200,168,75,.3)',8);
 
-    // Observer
-    ctx.save();ctx.font='16px serif';ctx.textAlign='center';ctx.fillText('👁',obs.x,obs.y+6);ctx.restore();
-    lbl('OBSERVER',obs.x,obs.y+22,'rgba(240,238,255,.3)',9);
+    // Observer edge — just a subtle screen-edge indicator, no label
+    ctx.save();
+    ctx.fillStyle='rgba(240,238,255,.12)';
+    ctx.beginPath();ctx.arc(obs.x,obs.y,4,0,Math.PI*2);ctx.fill();
+    ctx.restore();
 
     // Mass label
     const magnif=Math.max(1,(eR/Math.max(b,1)));
@@ -1097,8 +1110,10 @@ document.querySelectorAll('.fi').forEach(el=>scObs.observe(el));
   const c=document.getElementById('gas-canvas'),ctx=c.getContext('2d');
   const W=c.width,H=c.height,CX=W/2,CY=H/2;
   const PERIOD=2700; // 45s loop — longer phases so each is readable
-  let fr=0,running=true;
+  let fr=0,running=true,gasSpeed=1;
   window._gasToggle=()=>{running=!running};
+  window._gasRestart=()=>{fr=0};
+  window._setGasSpeed=(v)=>{gasSpeed=v};
 
   function lerp(a,b,t){return a+(b-a)*t}
   function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
@@ -1284,7 +1299,7 @@ document.querySelectorAll('.fi').forEach(el=>scObs.observe(el));
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle='#010008';ctx.fillRect(0,0,W,H);
 
-    if(running)fr++;
+    if(running)fr+=gasSpeed;
     const T=(fr%PERIOD)/PERIOD;
 
     // Phase weights using smooth hats — tuned for 45s loop
@@ -1349,6 +1364,22 @@ function toggleGas(){
   const paused=lbl.textContent==='Pause';
   lbl.textContent=paused?'Play':'Pause';
   ico.innerHTML=paused?'<path d="M8 5v14l11-7z"/>':'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+}
+
+function restartGas(){
+  window._gasRestart();
+  // If paused, resume so the user sees the restart
+  const lbl=document.getElementById('g-lbl');
+  if(lbl.textContent==='Play'){
+    window._gasToggle();
+    lbl.textContent='Pause';
+    document.getElementById('g-ico').innerHTML='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+  }
+}
+
+function setGasSpeed(v){
+  window._setGasSpeed(parseFloat(v));
+  document.getElementById('gas-speed-lbl').textContent=parseFloat(v).toFixed(1)+'×';
 }
 
 /* ════════════════════════════════════════════════════════
